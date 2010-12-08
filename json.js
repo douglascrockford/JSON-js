@@ -1,6 +1,6 @@
 /*
     json.js
-    2010-11-18
+    2010-12-08
 
     Public Domain
 
@@ -192,6 +192,13 @@
     stringify, test, toJSON, toJSONString, toString, valueOf
 */
 
+
+// Create a JSON object only if one does not already exist. We create the
+// methods in a closure to avoid creating global variables.
+
+if (!this.JSON) {
+    this.JSON = {};
+}
 
 (function () {
     "use strict";
