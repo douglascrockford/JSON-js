@@ -1,6 +1,6 @@
 /*
     http://www.JSON.org/json_parse_state.js
-    2009-05-31
+    2011-01-18
 
     Public Domain.
 

@@ -1,5 +1,5 @@
 // cycle.js
-// 2010-11-18
+// 2011-01-18
 
 /*jslint forin: true, evil: true */
 
@@ -76,7 +76,7 @@ if (typeof JSON.decycle !== 'function') {
                     for (name in value) {
                         if (Object.hasOwnProperty.call(value, name)) {
                             nu[name] = derez(value[name],
-                                    path + '[' + JSON.stringify(name) + ']');
+                                path + '[' + JSON.stringify(name) + ']');
                         }
                     }
                 }
@@ -114,7 +114,7 @@ if (typeof JSON.retrocycle !== 'function') {
 // produces an array containing a single element which is the array itself.
 
         var px =
-/^\$(?:\[(?:\d?|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
+            /^\$(?:\[(?:\d?|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
 
         (function rez(value) {
 
