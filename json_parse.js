@@ -1,6 +1,6 @@
 /*
     http://www.JSON.org/json_parse.js
-    2011-01-18
+    2011-02-23
 
     Public Domain.
 
@@ -47,10 +47,11 @@
 */
 
 /*members "", "\"", "\/", "\\", at, b, call, charAt, f, fromCharCode,
-    hasOwnProperty, message, n, name, push, r, t, text
+    hasOwnProperty, message, n, name, prototype, push, r, t, text
 */
 
 var json_parse = (function () {
+    "use strict";
 
 // This is a function that can parse a JSON text, producing a JavaScript
 // data structure. It is a simple, recursive descent parser. It does not use
@@ -329,7 +330,7 @@ var json_parse = (function () {
             var k, v, value = holder[key];
             if (value && typeof value === 'object') {
                 for (k in value) {
-                    if (Object.hasOwnProperty.call(value, k)) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
                         v = walk(value, k);
                         if (v !== undefined) {
                             value[k] = v;

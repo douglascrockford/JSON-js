@@ -1,6 +1,6 @@
 /*
     http://www.JSON.org/json_parse_state.js
-    2011-01-18
+    2011-02-23
 
     Public Domain.
 
@@ -51,11 +51,12 @@
 /*members "", "\"", ",", "\/", ":", "[", "\\", "]", acomma, avalue, b,
     call, colon, container, exec, f, false, firstavalue, firstokey,
     fromCharCode, go, hasOwnProperty, key, length, n, null, ocomma, okey,
-    ovalue, pop, push, r, replace, slice, state, t, test, true, value, "{",
-    "}"
+    ovalue, pop, prototype, push, r, replace, slice, state, t, test, true,
+    value, "{", "}"
 */
 
 var json_parse = (function () {
+    "use strict";
 
 // This function creates a JSON parse function that uses a state machine rather
 // than the dangerous eval function to parse a JSON text.
@@ -380,7 +381,7 @@ var json_parse = (function () {
             var k, v, value = holder[key];
             if (value && typeof value === 'object') {
                 for (k in value) {
-                    if (Object.hasOwnProperty.call(value, k)) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
                         v = walk(value, k);
                         if (v !== undefined) {
                             value[k] = v;

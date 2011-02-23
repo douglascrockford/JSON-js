@@ -1,7 +1,7 @@
 // cycle.js
-// 2011-01-18
+// 2011-02-23
 
-/*jslint forin: true, evil: true */
+/*jslint evil: true, regexp: false */
 
 /*members $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
     retrocycle, stringify, test, toString
@@ -9,6 +9,7 @@
 
 if (typeof JSON.decycle !== 'function') {
     JSON.decycle = function decycle(object) {
+        "use strict";
 
 // Make a deep copy of an object or array, assuring that there is at most
 // one instance of each object or array in the resulting structure. The
@@ -74,7 +75,7 @@ if (typeof JSON.decycle !== 'function') {
 
                     nu = {};
                     for (name in value) {
-                        if (Object.hasOwnProperty.call(value, name)) {
+                        if (Object.prototype.hasOwnProperty.call(value, name)) {
                             nu[name] = derez(value[name],
                                 path + '[' + JSON.stringify(name) + ']');
                         }
@@ -93,6 +94,7 @@ if (typeof JSON.decycle !== 'function') {
 
 if (typeof JSON.retrocycle !== 'function') {
     JSON.retrocycle = function retrocycle($) {
+        "use strict";
 
 // Restore an object that was reduced by decycle. Members whose values are
 // objects of the form
@@ -140,13 +142,15 @@ if (typeof JSON.retrocycle !== 'function') {
                     }
                 } else {
                     for (name in value) {
-                        item = value[name];
-                        if (item && typeof item === 'object') {
-                            path = item.$ref;
-                            if (typeof path === 'string' && px.test(path)) {
-                                value[name] = eval(path);
-                            } else {
-                                rez(item);
+                        if (typeof value[name] === 'object') {
+                            item = value[name];
+                            if (item) {
+                                path = item.$ref;
+                                if (typeof path === 'string' && px.test(path)) {
+                                    value[name] = eval(path);
+                                } else {
+                                    rez(item);
+                                }
                             }
                         }
                     }
