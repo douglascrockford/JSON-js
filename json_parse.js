@@ -1,6 +1,6 @@
 /*
     http://www.JSON.org/json_parse.js
-    2011-02-23
+    2011-03-06
 
     Public Domain.
 
@@ -137,7 +137,7 @@ var json_parse = (function () {
                 }
             }
             number = +string;
-            if (isNaN(number)) {
+            if (!isFinite(number)) {
                 error("Bad number");
             } else {
                 return number;
