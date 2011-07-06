@@ -280,13 +280,13 @@ if (!JSON) {
 // Is the value a date?
 
             if (Object.prototype.toString.apply(value) === '[object Date]') {
-                return isFinite(dt.valueOf()) ?
-                    dt.getUTCFullYear()     + '-' +
-                    f(dt.getUTCMonth() + 1) + '-' +
-                    f(dt.getUTCDate())      + 'T' +
-                    f(dt.getUTCHours())     + ':' +
-                    f(dt.getUTCMinutes())   + ':' +
-                    f(dt.getUTCSeconds())   + 'Z' : null;
+                return isFinite(value.valueOf()) ?
+                    value.getUTCFullYear()     + '-' +
+                    f(value.getUTCMonth() + 1) + '-' +
+                    f(value.getUTCDate())      + 'T' +
+                    f(value.getUTCHours())     + ':' +
+                    f(value.getUTCMinutes())   + ':' +
+                    f(value.getUTCSeconds())   + 'Z' : null;
             }
 
 // Is the value an array?
