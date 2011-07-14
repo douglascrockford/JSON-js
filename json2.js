@@ -395,9 +395,13 @@ if (!JSON) {
     }
 
 
+// IE8 native JSON.parse bug causes stack overflow: http://stackoverflow.com/questions/1288962
+
+    var ie8 = typeof window !== "undefined" && window.navigator && /MSIE 8.0/.test(navigator.userAgent);
+
 // If the JSON object does not yet have a parse method, give it one.
 
-    if (typeof JSON.parse !== 'function') {
+    if (typeof JSON.parse !== 'function' || ie8) { 
         JSON.parse = function (text, reviver) {
 
 // The parse method takes a text and an optional reviver function, and returns
