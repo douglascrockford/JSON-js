@@ -345,6 +345,9 @@ if (!JSON) {
                 '{' + partial.join(',') + '}';
             gap = mind;
             return v;
+
+        default:
+            return null;
         }
     }
 
