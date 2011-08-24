@@ -1,7 +1,7 @@
 // cycle.js
-// 2011-02-23
+// 2011-08-24
 
-/*jslint evil: true, regexp: false */
+/*jslint evil: true, regexp: true */
 
 /*members $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
     retrocycle, stringify, test, toString
@@ -9,7 +9,7 @@
 
 if (typeof JSON.decycle !== 'function') {
     JSON.decycle = function decycle(object) {
-        "use strict";
+        'use strict';
 
 // Make a deep copy of an object or array, assuring that there is at most
 // one instance of each object or array in the resulting structure. The
@@ -94,7 +94,7 @@ if (typeof JSON.decycle !== 'function') {
 
 if (typeof JSON.retrocycle !== 'function') {
     JSON.retrocycle = function retrocycle($) {
-        "use strict";
+        'use strict';
 
 // Restore an object that was reduced by decycle. Members whose values are
 // objects of the form
@@ -116,7 +116,7 @@ if (typeof JSON.retrocycle !== 'function') {
 // produces an array containing a single element which is the array itself.
 
         var px =
-            /^\$(?:\[(?:\d?|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
+            /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
 
         (function rez(value) {
 
