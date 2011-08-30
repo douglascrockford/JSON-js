@@ -1,6 +1,6 @@
 /*
     json.js
-    2011-02-23
+    2011-08-30
 
     Public Domain
 
@@ -183,7 +183,7 @@
     redistribute.
 */
 
-/*jslint evil: true, regexp: false */
+/*jslint evil: true, regexp: true, unparam: true */
 
 /*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
     call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
@@ -202,7 +202,7 @@ if (!JSON) {
 }
 
 (function () {
-    "use strict";
+    'use strict';
 
     function f(n) {
         // Format integers to have at least two digits.
