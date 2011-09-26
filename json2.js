@@ -172,6 +172,30 @@ if (!JSON) {
         return n < 10 ? '0' + n : n;
     }
 
+    /**
+     * Prototype JSON implementation used to be wrong and cause problems
+     * Since we're now reimplementing JSON stringification, we might as well
+     * remove their possibly erroneous code
+     * 
+     * See http://stackoverflow.com/questions/710586/json-stringify-bizarreness/3148441#3148441
+     */ 
+    if (window.Prototype && window.Prototype.Version < 1.7) {
+        Object.prototype.toJSON =
+        Array.prototype.toJSON =
+        Hash.prototype.toJSON =
+        String.prototype.toJSON = function ( ) {
+          return JSON.stringify ( this );
+        };
+        
+        Object.toJSON =
+        Array.toJSON =
+        Hash.toJSON =
+        String.toJSON = function ( element ) {
+          return JSON.stringify ( element );
+        }
+          
+    }
+    
     if (typeof Date.prototype.toJSON !== 'function') {
 
         Date.prototype.toJSON = function (key) {
