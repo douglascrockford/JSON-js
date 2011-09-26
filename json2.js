@@ -179,11 +179,21 @@ if (!JSON) {
      * 
      * See http://stackoverflow.com/questions/710586/json-stringify-bizarreness/3148441#3148441
      */ 
-    if (window.Prototype) {
-        delete Object.prototype.toJSON;
-        delete Array.prototype.toJSON;
-        delete Hash.prototype.toJSON;
-        delete String.prototype.toJSON;
+    if (window.Prototype && window.Prototype.Version < 1.7) {
+        Object.prototype.toJSON =
+        Array.prototype.toJSON =
+        Hash.prototype.toJSON =
+        String.prototype.toJSON = function ( ) {
+          return JSON.stringify ( this );
+        };
+        
+        Object.toJSON =
+        Array.toJSON =
+        Hash.toJSON =
+        String.toJSON = function ( element ) {
+          return JSON.stringify ( element );
+        }
+          
     }
     
     if (typeof Date.prototype.toJSON !== 'function') {
