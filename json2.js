@@ -159,20 +159,20 @@
 // Create a JSON object only if one does not already exist. We create the
 // methods in a closure to avoid creating global variables.
 
-var JSON;
-if (!JSON) {
-    JSON = {};
-}
-
-(function () {
+(function (global) {
     'use strict';
+    
+    global.JSON = global.JSON||{};
+    var ObjectPrototype = Object.prototype; // better performance, better minification
+    var hasOwnProperty = ObjectPrototype.hasOwnProperty; // ECMA implementation is implicitly generic (almost anything is Object)
+    var toString = ObjectPrototype.toString;
 
     function f(n) {
         // Format integers to have at least two digits.
         return n < 10 ? '0' + n : n;
     }
 
-    if (typeof Date.prototype.toJSON !== 'function') {
+    if (!Date.prototype.toJSON) {
 
         Date.prototype.toJSON = function (key) {
 
@@ -240,17 +240,12 @@ if (!JSON) {
 
 // If the value has a toJSON method, call it to obtain a replacement value.
 
-        if (value && typeof value === 'object' &&
-                typeof value.toJSON === 'function') {
-            value = value.toJSON(key);
-        }
+        if (value && value.toJSON) value = value.toJSON(key);
 
 // If we were called with a replacer function, then call the replacer to
 // obtain a replacement value.
 
-        if (typeof rep === 'function') {
-            value = rep.call(holder, key, value);
-        }
+        if (typeof rep === 'function') value = rep.call(holder, key, value);
 
 // What happens next depends on the value's type.
 
@@ -262,7 +257,7 @@ if (!JSON) {
 
 // JSON numbers must be finite. Encode non-finite numbers as null.
 
-            return isFinite(value) ? String(value) : 'null';
+            return isFinite(value) ? ''+value : 'null';
 
         case 'boolean':
         case 'null':
@@ -271,7 +266,7 @@ if (!JSON) {
 // typeof null does not produce 'null'. The case is included here in
 // the remote chance that this gets fixed someday.
 
-            return String(value);
+            return ''+value;
 
 // If the type is 'object', we might be dealing with an object or an array or
 // null.
@@ -281,9 +276,7 @@ if (!JSON) {
 // Due to a specification blunder in ECMAScript, typeof null is 'object',
 // so watch out for that case.
 
-            if (!value) {
-                return 'null';
-            }
+            if (!value) return 'null';
 
 // Make an array to hold the partial results of stringifying this object value.
 
@@ -292,13 +285,13 @@ if (!JSON) {
 
 // Is the value an array?
 
-            if (Object.prototype.toString.apply(value) === '[object Array]') {
+            if (toString.call(value) === '[object Array]') {
 
 // The value is an array. Stringify every element. Use null as a placeholder
 // for non-JSON values.
 
                 length = value.length;
-                for (i = 0; i < length; i += 1) {
+                for (i = 0; i < length; ++i) {
                     partial[i] = str(i, value) || 'null';
                 }
 
@@ -316,9 +309,9 @@ if (!JSON) {
 
 // If the replacer is an array, use it to select the members to be stringified.
 
-            if (rep && typeof rep === 'object') {
+            if (typeof rep === 'object' && rep) {
                 length = rep.length;
-                for (i = 0; i < length; i += 1) {
+                for (i = 0; i < length; ++i) {
                     if (typeof rep[i] === 'string') {
                         k = rep[i];
                         v = str(k, value);
@@ -332,11 +325,9 @@ if (!JSON) {
 // Otherwise, iterate through all of the keys in the object.
 
                 for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                    if (hasOwnProperty.call(value, k)) {
                         v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
+                        if (v) partial.push(quote(k) + (gap ? ': ' : ':') + v);
                     }
                 }
             }
@@ -373,9 +364,7 @@ if (!JSON) {
 // many spaces.
 
             if (typeof space === 'number') {
-                for (i = 0; i < space; i += 1) {
-                    indent += ' ';
-                }
+                for (i = 0; i < space; ++i) indent += ' ';
 
 // If the space parameter is a string, it will be used as the indent string.
 
@@ -403,7 +392,7 @@ if (!JSON) {
 
 // If the JSON object does not yet have a parse method, give it one.
 
-    if (typeof JSON.parse !== 'function') {
+    if (!JSON.parse) {
         JSON.parse = function (text, reviver) {
 
 // The parse method takes a text and an optional reviver function, and returns
@@ -419,9 +408,9 @@ if (!JSON) {
                 var k, v, value = holder[key];
                 if (value && typeof value === 'object') {
                     for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        if (hasOwnProperty.call(value, k)) {
                             v = walk(value, k);
-                            if (v !== undefined) {
+                            if (v !== void 0) {
                                 value[k] = v;
                             } else {
                                 delete value[k];
@@ -437,7 +426,7 @@ if (!JSON) {
 // Unicode characters with escape sequences. JavaScript handles many characters
 // incorrectly, either silently deleting them, or treating them as line endings.
 
-            text = String(text);
+            text = ''+text;
             cx.lastIndex = 0;
             if (cx.test(text)) {
                 text = text.replace(cx, function (a) {
@@ -484,4 +473,4 @@ if (!JSON) {
             throw new SyntaxError('JSON.parse');
         };
     }
-}());
+}(this));
