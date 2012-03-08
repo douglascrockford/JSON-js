@@ -159,7 +159,7 @@
 // Create a JSON object only if one does not already exist. We create the
 // methods in a closure to avoid creating global variables.
 
-(function (global, undef) {
+(function (global) {
     'use strict';
     
     global.JSON = global.JSON||{};
@@ -410,7 +410,7 @@
                     for (k in value) {
                         if (hasOwnProperty.call(value, k)) {
                             v = walk(value, k);
-                            if (v !== undefined) {
+                            if (v !== void 0) {
                                 value[k] = v;
                             } else {
                                 delete value[k];
