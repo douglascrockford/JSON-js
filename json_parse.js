@@ -1,5 +1,5 @@
 /*
-    http://www.JSON.org/json_parse.js
+    json_parse.js
     2011-03-06
 
     Public Domain.

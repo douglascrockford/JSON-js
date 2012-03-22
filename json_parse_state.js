@@ -1,5 +1,5 @@
 /*
-    http://www.JSON.org/json_parse_state.js
+    json_parse_state.js
     2011-02-23
 
     Public Domain.
