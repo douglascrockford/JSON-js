@@ -7,8 +7,10 @@
     retrocycle, stringify, test, toString
 */
 
-if (typeof JSON.decycle !== 'function') {
-    JSON.decycle = function decycle(object) {
+(function (exports) {
+
+if (typeof exports.decycle !== 'function') {
+    exports.decycle = function decycle(object) {
         'use strict';
 
 // Make a deep copy of an object or array, assuring that there is at most
@@ -92,8 +94,8 @@ if (typeof JSON.decycle !== 'function') {
 }
 
 
-if (typeof JSON.retrocycle !== 'function') {
-    JSON.retrocycle = function retrocycle($) {
+if (typeof exports.retrocycle !== 'function') {
+    exports.retrocycle = function retrocycle($) {
         'use strict';
 
 // Restore an object that was reduced by decycle. Members whose values are
@@ -160,3 +162,11 @@ if (typeof JSON.retrocycle !== 'function') {
         return $;
     };
 }
+}) (
+  (typeof exports !== 'undefined') ? 
+    exports : 
+    (window.JSON ? 
+      (window.JSON) :
+      (window.JSON = {})
+    )
+);

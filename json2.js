@@ -156,15 +156,7 @@
 */
 
 
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-
-var JSON;
-if (!JSON) {
-    JSON = {};
-}
-
-(function () {
+(function (JSON) {
     'use strict';
 
     function f(n) {
@@ -484,4 +476,15 @@ if (!JSON) {
             throw new SyntaxError('JSON.parse');
         };
     }
-}());
+})(
+    
+    // Create a JSON object only if one does not already exist. We create the
+    // methods in a closure to avoid creating global variables.
+    
+  (typeof exports !== 'undefined') ? 
+    exports : 
+    (window.JSON ? 
+      (window.JSON) :
+      (window.JSON = {})
+    )
+);
