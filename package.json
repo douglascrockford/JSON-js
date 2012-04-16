@@ -1,0 +1,13 @@
+{
+  "name": "JSON2"
+  ,"description": "Douglas Crawford's JSON2, ported to a CommonJS compliant module"
+  ,"version": "0.1.0"
+  ,"author": "Douglas Crockford <douglas@crockford.com>"
+  ,"contributors": [
+    "Dave Dopson <ddopson@gmail.com>"
+  ]
+  ,"dependencies": { }
+  ,"devDependencies": { }
+  ,"main": "index.js"
+  ,"repository": {"type": "git", "url": "git://github.com/ddopson/JSON-js.git" }
+}

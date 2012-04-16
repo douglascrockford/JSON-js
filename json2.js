@@ -156,15 +156,7 @@
 */
 
 
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-
-var JSON;
-if (!JSON) {
-    JSON = {};
-}
-
-(function () {
+(function (JSON) {
     'use strict';
 
     function f(n) {
@@ -172,27 +164,37 @@ if (!JSON) {
         return n < 10 ? '0' + n : n;
     }
 
-    if (typeof Date.prototype.toJSON !== 'function') {
+    /* DDOPSON-2012-04-16 - mutating global prototypes is NOT allowed for a well-behaved module.  
+     * It's also unneeded, since Date already defines toJSON() to the same ISOwhatever format below
+     * Thus, we skip this logic for the CommonJS case where 'exports' is defined
+     */
+    if (typeof exports === 'undefined') {
+      if (typeof Date.prototype.toJSON !== 'function') {
+          Date.prototype.toJSON = function (key) {
 
-        Date.prototype.toJSON = function (key) {
+              return isFinite(this.valueOf())
+                  ? this.getUTCFullYear()     + '-' +
+                      f(this.getUTCMonth() + 1) + '-' +
+                      f(this.getUTCDate())      + 'T' +
+                      f(this.getUTCHours())     + ':' +
+                      f(this.getUTCMinutes())   + ':' +
+                      f(this.getUTCSeconds())   + 'Z'
+                  : null;
+          };
+      }
+      
+      if (typeof String.prototype.toJSON !== 'function') {
+        String.prototype.toJSON = function (key) { return this.valueOf(); };
+      }
 
-            return isFinite(this.valueOf())
-                ? this.getUTCFullYear()     + '-' +
-                    f(this.getUTCMonth() + 1) + '-' +
-                    f(this.getUTCDate())      + 'T' +
-                    f(this.getUTCHours())     + ':' +
-                    f(this.getUTCMinutes())   + ':' +
-                    f(this.getUTCSeconds())   + 'Z'
-                : null;
-        };
-
-        String.prototype.toJSON      =
-            Number.prototype.toJSON  =
-            Boolean.prototype.toJSON = function (key) {
-                return this.valueOf();
-            };
+      if (typeof Number.prototype.toJSON !== 'function') {
+        Number.prototype.toJSON = function (key) { return this.valueOf(); };
+      }
+      
+      if (typeof Boolean.prototype.toJSON !== 'function') {
+        Boolean.prototype.toJSON = function (key) { return this.valueOf(); };
+      }
     }
-
     var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
         escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
         gap,
@@ -484,4 +486,15 @@ if (!JSON) {
             throw new SyntaxError('JSON.parse');
         };
     }
-}());
+})(
+    
+    // Create a JSON object only if one does not already exist. We create the
+    // methods in a closure to avoid creating global variables.
+    
+  (typeof exports !== 'undefined') ? 
+    exports : 
+    (window.JSON ? 
+      (window.JSON) :
+      (window.JSON = {})
+    )
+);
