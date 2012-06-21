@@ -1,6 +1,6 @@
 /*
     json_parse.js
-    2011-03-06
+    2012-06-20
 
     Public Domain.
 
@@ -160,7 +160,8 @@ var json_parse = (function () {
                     if (ch === '"') {
                         next();
                         return string;
-                    } else if (ch === '\\') {
+                    }
+                    if (ch === '\\') {
                         next();
                         if (ch === 'u') {
                             uffff = 0;
@@ -326,21 +327,23 @@ var json_parse = (function () {
 // in an empty key. If there is not a reviver function, we simply return the
 // result.
 
-        return typeof reviver === 'function' ? (function walk(holder, key) {
-            var k, v, value = holder[key];
-            if (value && typeof value === 'object') {
-                for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                        v = walk(value, k);
-                        if (v !== undefined) {
-                            value[k] = v;
-                        } else {
-                            delete value[k];
+        return typeof reviver === 'function'
+            ? (function walk(holder, key) {
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
                         }
                     }
                 }
-            }
-            return reviver.call(holder, key, value);
-        }({'': result}, '')) : result;
+                return reviver.call(holder, key, value);
+            }({'': result}, ''))
+            : result;
     };
 }());
