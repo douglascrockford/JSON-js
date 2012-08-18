@@ -93,6 +93,7 @@ if (typeof JSON.decycle !== 'function') {
                         }
                     }
                 }
+                objects.pop();
                 return nu;
             case 'number':
             case 'string':
