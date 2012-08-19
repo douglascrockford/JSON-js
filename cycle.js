@@ -59,6 +59,14 @@ if (typeof JSON.decycle !== 'function') {
                     return null;
                 }
 
+                // these "objects" should all pass-through and not be handled by 'decycle'
+                if (value instanceof Date || value instanceof Boolean || 
+                    value instanceof String || value instanceof Number || 
+                    value instanceof RegExp
+                ) {
+                    return value;
+                }
+
 // If the value is an object or array, look to see if we have already
 // encountered it. If so, return a $ref/path object. This is a hard way,
 // linear search that will get slower as the number of unique objects grows.
