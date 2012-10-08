@@ -1,6 +1,6 @@
 /*
     json.js
-    2011-08-30
+    2012-10-08
 
     Public Domain
 
@@ -196,8 +196,7 @@
 // Create a JSON object only if one does not already exist. We create the
 // methods in a closure to avoid creating global variables.
 
-var JSON;
-if (!JSON) {
+if (typeof JSON !== 'object') {
     JSON = {};
 }
 
