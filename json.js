@@ -270,7 +270,8 @@ if (typeof JSON !== 'object') {
             length,
             mind = gap,
             partial,
-            value = holder[key];
+            value = holder[key],
+            type;
 
 // If the value has a toJSON method, call it to obtain a replacement value.
 
@@ -324,9 +325,12 @@ if (typeof JSON !== 'object') {
             gap += indent;
             partial = [];
 
+// Get the type of value based on its internal [[Class]]
+            type = Object.prototype.toString.apply(value);
+
 // Is the value an array?
 
-            if (Object.prototype.toString.apply(value) === '[object Array]') {
+            if (type === '[object Array]') {
 
 // The value is an array. Stringify every element. Use null as a placeholder
 // for non-JSON values.
@@ -348,7 +352,7 @@ if (typeof JSON !== 'object') {
 
 // Is the value is a date created in another context (frame)?
 
-            if (Object.prototype.toString.apply(value) === '[object Date]') {
+            if (type === '[object Date]') {
                 return quote(Date.prototype.toJSON.call(value));
             }
 
