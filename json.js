@@ -346,6 +346,12 @@ if (typeof JSON !== 'object') {
                 return v;
             }
 
+// Is the value is a date created in another context (frame)?
+
+            if (Object.prototype.toString.apply(value) === '[object Date]') {
+                return quote(Date.prototype.toJSON.call(value));
+            }
+
 // If the replacer is an array, use it to select the members to be stringified.
 
             if (rep && typeof rep === 'object') {
