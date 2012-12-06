@@ -270,7 +270,16 @@ if (typeof JSON !== 'object') {
             length,
             mind = gap,
             partial,
+            value;
+            
+// Getters can generate errors and thus make our code crash, we shouldn't
+// allow this
+            
+        try {
             value = holder[key];
+        } catch (e) {
+            value = "Error while accessing property "+e;
+        }
 
 // If the value has a toJSON method, call it to obtain a replacement value.
 
@@ -526,4 +535,5 @@ if (typeof JSON !== 'object') {
             return JSON.parse(this, filter);
         };
     }
+    
 }());
