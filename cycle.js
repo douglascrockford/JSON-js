@@ -1,6 +1,6 @@
 /*
     cycle.js
-    2012-08-19
+    2013-02-19
 
     Public Domain.
 
@@ -50,20 +50,15 @@ if (typeof JSON.decycle !== 'function') {
                 name,       // Property name
                 nu;         // The new object or array
 
-            switch (typeof value) {
-            case 'object':
+// typeof null === 'object', so go on if this value is really an object but not
+// one of the weird builtin objects.
 
-// typeof null === 'object', so get out if this value is not really an object.
-// Also get out if it is a weird builtin object.
-
-                if (value === null ||
-                        value instanceof Boolean ||
-                        value instanceof Date    ||
-                        value instanceof Number  ||
-                        value instanceof RegExp  ||
-                        value instanceof String) {
-                    return value;
-                }
+            if (typeof value === 'object' && value !== null &&
+                    !(value instanceof Boolean) &&
+                    !(value instanceof Date)    &&
+                    !(value instanceof Number)  &&
+                    !(value instanceof RegExp)  &&
+                    !(value instanceof String)) {
 
 // If the value is an object or array, look to see if we have already
 // encountered it. If so, return a $ref/path object. This is a hard way,
@@ -100,11 +95,8 @@ if (typeof JSON.decycle !== 'function') {
                     }
                 }
                 return nu;
-            case 'number':
-            case 'string':
-            case 'boolean':
-                return value;
             }
+            return value;
         }(object, '$'));
     };
 }
