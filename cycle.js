@@ -50,8 +50,7 @@ if (typeof JSON.decycle !== 'function') {
                 name,       // Property name
                 nu;         // The new object or array
 
-            switch (typeof value) {
-            case 'object':
+            if (typeof value == 'object') {
 
 // typeof null === 'object', so get out if this value is not really an object.
 // Also get out if it is a weird builtin object.
@@ -100,11 +99,9 @@ if (typeof JSON.decycle !== 'function') {
                     }
                 }
                 return nu;
-            case 'number':
-            case 'string':
-            case 'boolean':
-                return value;
             }
+
+            return value;
         }(object, '$'));
     };
 }
