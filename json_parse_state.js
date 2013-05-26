@@ -1,6 +1,6 @@
 /*
     json_parse_state.js
-    2012-06-01
+    2013-05-26
 
     Public Domain.
 
@@ -46,7 +46,7 @@
     NOT CONTROL.
 */
 
-/*jslint regexp: false*/
+/*jslint regexp: true, unparam: true */
 
 /*members "", "\"", ",", "\/", ":", "[", "\\", "]", acomma, avalue, b,
     call, colon, container, exec, f, false, firstavalue, firstokey,
