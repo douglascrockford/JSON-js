@@ -87,6 +87,10 @@ if (typeof JSON.decycle !== 'function') {
 // If it is an object, replicate the object.
 
                     nu = {};
+                    var _ref, _ref1;
+                    if ((typeof value !== "undefined" && value !== null ? (_ref = value.__proto__) != null ? (_ref1 = _ref.constructor) != null ? _ref1.name : void 0 : void 0 : void 0) != null) {
+                        nu.$ctor = value.__proto__.constructor.name;
+                    }
                     for (name in value) {
                         if (Object.prototype.hasOwnProperty.call(value, name)) {
                             nu[name] = derez(value[name],
@@ -103,8 +107,9 @@ if (typeof JSON.decycle !== 'function') {
 
 
 if (typeof JSON.retrocycle !== 'function') {
-    JSON.retrocycle = function retrocycle($) {
+    JSON.retrocycle = function retrocycle($, classMap) {
         'use strict';
+
 
 // Restore an object that was reduced by decycle. Members whose values are
 // objects of the form
@@ -125,10 +130,16 @@ if (typeof JSON.retrocycle !== 'function') {
 //      return JSON.retrocycle(JSON.parse(s));
 // produces an array containing a single element which is the array itself.
 
+// Pass along a hash with your constructor names mapped to your classes and retrocycle
+// will replace their __proto__'s during deserialization. BTW __proto__ is deprecated,
+// use with caution.
+
+        classMap = classMap || {};
+        
         var px =
             /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
 
-        (function rez(value) {
+        (function rez(value, classMap) {
 
 // The rez function walks recursively through the object looking for $ref
 // properties. When it finds one that has a value that is a path, then it
@@ -146,7 +157,7 @@ if (typeof JSON.retrocycle !== 'function') {
                             if (typeof path === 'string' && px.test(path)) {
                                 value[i] = eval(path);
                             } else {
-                                rez(item);
+                                rez(item, classMap);
                             }
                         }
                     }
@@ -159,14 +170,24 @@ if (typeof JSON.retrocycle !== 'function') {
                                 if (typeof path === 'string' && px.test(path)) {
                                     value[name] = eval(path);
                                 } else {
-                                    rez(item);
+                                    rez(item, classMap);
+                                }
+
+                                var newItem = value[name];
+                                var ctorName = newItem.$ctor;
+                                var _ref;
+
+                                if (((_ref = classMap[ctorName]) != null 
+                                    ? _ref.prototype : void 0) != null) {
+                                    var proto = _ref.prototype;
+                                    newItem.__proto__ = proto;
                                 }
                             }
                         }
                     }
                 }
             }
-        }($));
+        }($, classMap));
         return $;
     };
 }
