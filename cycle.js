@@ -20,8 +20,13 @@
 */
 
 if (typeof JSON.decycle !== 'function') {
-    JSON.decycle = function decycle(object) {
+    JSON.decycle = function decycle(object, valueReplacer) {
         'use strict';
+
+        if (typeof valueReplacer === "undefined")
+            valueReplacer = function(value, path){
+                return value;
+            };
 
 // Make a deep copy of an object or array, assuring that there is at most
 // one instance of each object or array in the resulting structure. The
@@ -42,7 +47,13 @@ if (typeof JSON.decycle !== 'function') {
         var objects = [],   // Keep a reference to each unique object or array
             paths = [];     // Keep the path to each unique object or array
 
-        return (function derez(value, path) {
+        return (function derez(derezValue, path) {
+
+// Give the caller an opportunity to replace the value at any given path.
+// This is useful in case the caller requires derez to honor things such as
+// the representation an object gives to JSON.stringify() through
+// object.toJSON()
+            var value = valueReplacer(derezValue, path);
 
 // The derez recurses through the object, producing the deep copy.
 
@@ -65,14 +76,14 @@ if (typeof JSON.decycle !== 'function') {
 // linear search that will get slower as the number of unique objects grows.
 
                 for (i = 0; i < objects.length; i += 1) {
-                    if (objects[i] === value) {
+                    if (objects[i] === derezValue) {
                         return {$ref: paths[i]};
                     }
                 }
 
 // Otherwise, accumulate the unique value and its path.
 
-                objects.push(value);
+                objects.push(derezValue);
                 paths.push(path);
 
 // If it is an array, replicate the array.
