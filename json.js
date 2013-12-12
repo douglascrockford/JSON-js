@@ -333,8 +333,7 @@ if (typeof JSON !== 'object') {
 // The value is an array. Stringify every element. Use null as a placeholder
 // for non-JSON values.
 
-                length = value.length;
-                for (i = 0; i < length; i += 1) {
+                for (i = 0, length = value.length; i < length; i += 1) {
                     partial[i] = str(i, value) || 'null';
                 }
 
@@ -353,8 +352,7 @@ if (typeof JSON !== 'object') {
 // If the replacer is an array, use it to select the members to be stringified.
 
             if (rep && typeof rep === 'object') {
-                length = rep.length;
-                for (i = 0; i < length; i += 1) {
+                for (i = 0, length = rep.length; i < length; i += 1) {
                     k = rep[i];
                     if (typeof k === 'string') {
                         v = str(k, value);
