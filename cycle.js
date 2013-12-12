@@ -64,7 +64,7 @@ if (typeof JSON.decycle !== 'function') {
 // encountered it. If so, return a $ref/path object. This is a hard way,
 // linear search that will get slower as the number of unique objects grows.
 
-                for (i = 0; i < objects.length; i += 1) {
+                for (i = 0, length = objects.length; i < length; i += 1) {
                     if (objects[i] === value) {
                         return {$ref: paths[i]};
                     }
@@ -79,7 +79,7 @@ if (typeof JSON.decycle !== 'function') {
 
                 if (Object.prototype.toString.apply(value) === '[object Array]') {
                     nu = [];
-                    for (i = 0; i < value.length; i += 1) {
+                    for (i = 0, length = value.length; i < length; i += 1) {
                         nu[i] = derez(value[i], path + '[' + i + ']');
                     }
                 } else {
@@ -139,7 +139,7 @@ if (typeof JSON.retrocycle !== 'function') {
 
             if (value && typeof value === 'object') {
                 if (Object.prototype.toString.apply(value) === '[object Array]') {
-                    for (i = 0; i < value.length; i += 1) {
+                    for (i = 0, length = value.length; i < length; i += 1) {
                         item = value[i];
                         if (item && typeof item === 'object') {
                             path = item.$ref;
