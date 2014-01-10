@@ -164,8 +164,6 @@ if (typeof JSON !== 'object') {
 }
 
 (function () {
-    'use strict';
-
     function f(n) {
         // Format integers to have at least two digits.
         return n < 10 ? '0' + n : n;
