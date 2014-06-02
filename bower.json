@@ -1,0 +1,9 @@
+{
+    "name": "json2",
+    "version": "1.0.0",
+    "main": "json2.js",
+    "ignore": [
+        "bower.json",
+        "README"
+    ]
+}
