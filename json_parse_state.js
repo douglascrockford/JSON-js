@@ -392,6 +392,6 @@ var json_parse = (function () {
                 }
             }
             return reviver.call(holder, key, value);
-        }({'': value}, '')) : value;
+        })({'': value}, '') : value;
     };
 }());
