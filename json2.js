@@ -170,6 +170,13 @@ if (typeof JSON !== 'object') {
         // Format integers to have at least two digits.
         return n < 10 ? '0' + n : n;
     }
+    
+    function f3(n) {
+        // Format integers to have at least three digits.
+        return n < 10 ? '00' + n 
+            : n < 100 ? '0' + n 
+            : n;
+    }
 
     if (typeof Date.prototype.toJSON !== 'function') {
 
@@ -181,7 +188,8 @@ if (typeof JSON !== 'object') {
                     f(this.getUTCDate())      + 'T' +
                     f(this.getUTCHours())     + ':' +
                     f(this.getUTCMinutes())   + ':' +
-                    f(this.getUTCSeconds())   + 'Z'
+                    f(this.getUTCSeconds())   + '.' +
+                    f3(this.getMilliseconds()) + 'Z'
                 : null;
         };
 
