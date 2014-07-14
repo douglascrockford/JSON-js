@@ -7,6 +7,7 @@
     NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 
     See http://www.JSON.org/js.html
+    See https://github.com/douglascrockford/JSON-js
 
 
     This code should be minified before deployment.
