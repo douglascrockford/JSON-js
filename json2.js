@@ -227,13 +227,6 @@ var setupCustomJSON = function(JSON) {
             partial,
             value = holder[key];
 
-// If the value has a toJSON method, call it to obtain a replacement value.
-
-        if (value && typeof value === 'object' &&
-                typeof value.toJSON === 'function') {
-            value = value.toJSON(key);
-        }
-
 // If we were called with a replacer function, then call the replacer to
 // obtain a replacement value.
 
