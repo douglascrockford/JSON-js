@@ -209,9 +209,9 @@ if (typeof JSON !== 'object') {
     }
 
     if (typeof Date.prototype.toJSON !== 'function') {
-
+        
         Date.prototype.toJSON = function (key) {
-
+            
             return isFinite(this.valueOf())
                 ?     this.getUTCFullYear()   + '-' +
                     f(this.getUTCMonth() + 1) + '-' +
@@ -221,12 +221,20 @@ if (typeof JSON !== 'object') {
                     f(this.getUTCSeconds())   + 'Z'
                 : null;
         };
-
-        String.prototype.toJSON      =
-            Number.prototype.toJSON  =
-            Boolean.prototype.toJSON = function (key) {
-                return this.valueOf();
-            };
+    }
+    
+    var toJSON = function (key) {
+        return this.valueOf();
+    };
+    
+    if (typeof String.prototype.toJSON !== 'function') {
+        String.prototype.toJSON = toJSON;
+    }
+    if (typeof Number.prototype.toJSON !== 'function') {
+        Number.prototype.toJSON = toJSON;
+    }
+    if (typeof Boolean.prototype.toJSON !== 'function') {
+        Boolean.prototype.toJSON = toJSON;
     }
 
     var cx,
