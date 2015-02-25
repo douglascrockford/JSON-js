@@ -1,6 +1,6 @@
 /*
     json_parse_state.js
-    2013-05-26
+    2015-02-25
 
     Public Domain.
 
@@ -46,13 +46,13 @@
     NOT CONTROL.
 */
 
-/*jslint regexp: true, unparam: true */
+/*jslint for */
 
-/*members "", "\"", ",", "\/", ":", "[", "\\", "]", acomma, avalue, b,
-    call, colon, container, exec, f, false, firstavalue, firstokey,
-    fromCharCode, go, hasOwnProperty, key, length, n, null, ocomma, okey,
-    ovalue, pop, prototype, push, r, replace, slice, state, t, test, true,
-    value, "{", "}"
+/*property
+    acomma, avalue, b, call, colon, container, exec, f, false, firstavalue,
+    firstokey, fromCharCode, go, hasOwnProperty, key, length, n, null, ocomma,
+    okey, ovalue, pop, prototype, push, r, replace, slice, state, t, test,
+    true
 */
 
 var json_parse = (function () {
@@ -287,8 +287,10 @@ var json_parse = (function () {
 
 // Remove and replace any backslash escapement.
 
-        return text.replace(/\\(?:u(.{4})|([^u]))/g, function (a, b, c) {
-            return b ? String.fromCharCode(parseInt(b, 16)) : escapes[c];
+        return text.replace(/\\(?:u(.{4})|([^u]))/g, function (ignore, b, c) {
+            return b 
+            ? String.fromCharCode(parseInt(b, 16)) 
+            : escapes[c];
         });
     }
 
@@ -298,7 +300,7 @@ var json_parse = (function () {
 // The extraction process is cautious.
 
         var r,          // The result of the exec method.
-            tx = /^[\x20\t\n\r]*(?:([,:\[\]{}]|true|false|null)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|"((?:[^\r\n\t\\\"]|\\(?:["\\\/trnfb]|u[0-9a-fA-F]{4}))*)")/;
+            tx = /^[\u0020\t\n\r]*(?:([,:\[\]{}]|true|false|null)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|"((?:[^\r\n\t\\\"]|\\(?:["\\\/trnfb]|u[0-9a-fA-F]{4}))*)")/;
 
 // Set the starting state.
 
@@ -315,7 +317,7 @@ var json_parse = (function () {
 
 // For each token...
 
-            for (;;) {
+            while (true) {
                 r = tx.exec(source);
                 if (!r) {
                     break;
@@ -367,8 +369,10 @@ var json_parse = (function () {
 // remaining source contains anything except whitespace, then we did not have
 //a well-formed JSON text.
 
-        if (state !== 'ok' || /[^\x20\t\n\r]/.test(source)) {
-            throw state instanceof SyntaxError ? state : new SyntaxError('JSON');
+        if (state !== 'ok' || (/[^\u0020\t\n\r]/.test(source))) {
+            throw state instanceof SyntaxError 
+            ? state 
+            : new SyntaxError('JSON');
         }
 
 // If there is a reviver function, we recursively walk the new structure,
@@ -377,7 +381,8 @@ var json_parse = (function () {
 // value in an empty key. If there is not a reviver function, we simply return
 // that value.
 
-        return typeof reviver === 'function' ? (function walk(holder, key) {
+        return typeof reviver === 'function' 
+        ? (function walk(holder, key) {
             var k, v, value = holder[key];
             if (value && typeof value === 'object') {
                 for (k in value) {
@@ -392,6 +397,7 @@ var json_parse = (function () {
                 }
             }
             return reviver.call(holder, key, value);
-        }({'': value}, '')) : value;
+        }({'': value}, '')) 
+        : value;
     };
 }());

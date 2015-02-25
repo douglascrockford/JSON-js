@@ -1,6 +1,6 @@
 /*
     json_parse.js
-    2012-06-20
+    2015-02-25
 
     Public Domain.
 
@@ -46,8 +46,11 @@
     NOT CONTROL.
 */
 
-/*members "", "\"", "\/", "\\", at, b, call, charAt, f, fromCharCode,
-    hasOwnProperty, message, n, name, prototype, push, r, t, text
+/*jslint for */
+
+/*property 
+    at, b, call, charAt, f, fromCharCode, hasOwnProperty, message, n, name, 
+    prototype, push, r, t, text
 */
 
 var json_parse = (function () {
@@ -64,14 +67,14 @@ var json_parse = (function () {
     var at,     // The index of the current character
         ch,     // The current character
         escapee = {
-            '"':  '"',
+            '"': '"',
             '\\': '\\',
-            '/':  '/',
-            b:    '\b',
-            f:    '\f',
-            n:    '\n',
-            r:    '\r',
-            t:    '\t'
+            '/': '/',
+            b: '\b',
+            f: '\f',
+            n: '\n',
+            r: '\r',
+            t: '\t'
         },
         text,
 
@@ -80,10 +83,10 @@ var json_parse = (function () {
 // Call error when something is wrong.
 
             throw {
-                name:    'SyntaxError',
+                name: 'SyntaxError',
                 message: m,
-                at:      at,
-                text:    text
+                at: at,
+                text: text
             };
         },
 
@@ -302,7 +305,9 @@ var json_parse = (function () {
         case '-':
             return number();
         default:
-            return ch >= '0' && ch <= '9' ? number() : word();
+            return ch >= '0' && ch <= '9' 
+            ? number() 
+            : word();
         }
     };
 
@@ -328,22 +333,22 @@ var json_parse = (function () {
 // result.
 
         return typeof reviver === 'function'
-            ? (function walk(holder, key) {
-                var k, v, value = holder[key];
-                if (value && typeof value === 'object') {
-                    for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
-                            if (v !== undefined) {
-                                value[k] = v;
-                            } else {
-                                delete value[k];
-                            }
+        ? (function walk(holder, key) {
+            var k, v, value = holder[key];
+            if (value && typeof value === 'object') {
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = walk(value, k);
+                        if (v !== undefined) {
+                            value[k] = v;
+                        } else {
+                            delete value[k];
                         }
                     }
                 }
-                return reviver.call(holder, key, value);
-            }({'': result}, ''))
-            : result;
+            }
+            return reviver.call(holder, key, value);
+        }({'': result}, ''))
+        : result;
     };
 }());

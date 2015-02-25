@@ -1,6 +1,6 @@
 /*
     cycle.js
-    2013-02-19
+    2015-02-25
 
     Public Domain.
 
@@ -13,9 +13,10 @@
     NOT CONTROL.
 */
 
-/*jslint evil: true, regexp: true */
+/*jslint eval, for */
 
-/*members $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
+/*property 
+    $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
     retrocycle, stringify, test, toString
 */
 
@@ -55,9 +56,9 @@ if (typeof JSON.decycle !== 'function') {
 
             if (typeof value === 'object' && value !== null &&
                     !(value instanceof Boolean) &&
-                    !(value instanceof Date)    &&
-                    !(value instanceof Number)  &&
-                    !(value instanceof RegExp)  &&
+                    !(value instanceof Date) &&
+                    !(value instanceof Number) &&
+                    !(value instanceof RegExp) &&
                     !(value instanceof String)) {
 
 // If the value is an object or array, look to see if we have already
@@ -90,7 +91,7 @@ if (typeof JSON.decycle !== 'function') {
                     for (name in value) {
                         if (Object.prototype.hasOwnProperty.call(value, name)) {
                             nu[name] = derez(value[name],
-                                path + '[' + JSON.stringify(name) + ']');
+                                    path + '[' + JSON.stringify(name) + ']');
                         }
                     }
                 }
@@ -125,8 +126,7 @@ if (typeof JSON.retrocycle !== 'function') {
 //      return JSON.retrocycle(JSON.parse(s));
 // produces an array containing a single element which is the array itself.
 
-        var px =
-            /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
+        var px = /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
 
         (function rez(value) {
 
