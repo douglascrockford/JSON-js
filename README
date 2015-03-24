@@ -24,7 +24,7 @@ isn't already one, setting its value to an object containing a stringify
 method and a parse method. The parse method uses the eval method to do the
 parsing, guarding it with several regular expressions to defend against
 accidental code execution hazards. On current browsers, this file does nothing,
-prefering the built-in JSON object.
+preferring the built-in JSON object.
 
 json.js: This file does everything that json2.js does. It also adds a
 toJSONString method and a parseJSON method to Object.prototype. Use of this
