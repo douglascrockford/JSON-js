@@ -1,6 +1,6 @@
 /*
     json_parse.js
-    2015-02-25
+    2015-05-02
 
     Public Domain.
 
@@ -306,8 +306,8 @@ var json_parse = (function () {
             return number();
         default:
             return ch >= '0' && ch <= '9' 
-            ? number() 
-            : word();
+                ? number() 
+                : word();
         }
     };
 
@@ -333,22 +333,22 @@ var json_parse = (function () {
 // result.
 
         return typeof reviver === 'function'
-        ? (function walk(holder, key) {
-            var k, v, value = holder[key];
-            if (value && typeof value === 'object') {
-                for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                        v = walk(value, k);
-                        if (v !== undefined) {
-                            value[k] = v;
-                        } else {
-                            delete value[k];
+            ? (function walk(holder, key) {
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
                         }
                     }
                 }
-            }
-            return reviver.call(holder, key, value);
-        }({'': result}, ''))
-        : result;
+                return reviver.call(holder, key, value);
+            }({'': result}, ''))
+            : result;
     };
 }());

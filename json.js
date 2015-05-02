@@ -1,6 +1,6 @@
 /*
     json.js
-    2015-05-01
+    2015-05-02
 
     Public Domain
 
@@ -47,7 +47,9 @@
             // convert the value to a date.
 
             myData = text.parseJSON(function (key, value) {
-                return key.indexOf('date') >= 0 ? new Date(value) : value;
+                return key.indexOf('date') >= 0 
+                    ? new Date(value) 
+                    : value;
             });
 
     This file will break programs with improper for..in loops. See
@@ -85,7 +87,9 @@
                 Date.prototype.toJSON = function (key) {
                     function f(n) {
                         // Format integers to have at least two digits.
-                        return n < 10 ? '0' + n : n;
+                        return n < 10 
+                            ? '0' + n 
+                            : n;
                     }
 
                     return this.getUTCFullYear()   + '-' +
@@ -131,8 +135,9 @@
             // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
 
             text = JSON.stringify([new Date()], function (key, value) {
-                return this[key] instanceof Date ?
-                    'Date(' + this[key] + ')' : value;
+                return this[key] instanceof Date 
+                    ? 'Date(' + this[key] + ')' 
+                    : value;
             });
             // text is '["Date(---current time---)"]'
 
@@ -205,8 +210,8 @@ if (typeof JSON !== 'object') {
     function f(n) {
         // Format integers to have at least two digits.
         return n < 10 
-        ? '0' + n 
-        : n;
+            ? '0' + n 
+            : n;
     }
     
     function this_value() {
@@ -218,13 +223,13 @@ if (typeof JSON !== 'object') {
         Date.prototype.toJSON = function (ignore) {
 
             return isFinite(this.valueOf())
-            ? this.getUTCFullYear() + '-' +
-                    f(this.getUTCMonth() + 1) + '-' +
-                    f(this.getUTCDate()) + 'T' +
-                    f(this.getUTCHours()) + ':' +
-                    f(this.getUTCMinutes()) + ':' +
-                    f(this.getUTCSeconds()) + 'Z'
-            : null;
+                ? this.getUTCFullYear() + '-' +
+                        f(this.getUTCMonth() + 1) + '-' +
+                        f(this.getUTCDate()) + 'T' +
+                        f(this.getUTCHours()) + ':' +
+                        f(this.getUTCMinutes()) + ':' +
+                        f(this.getUTCSeconds()) + 'Z'
+                : null;
         };
 
         Boolean.prototype.toJSON = this_value;
@@ -249,13 +254,13 @@ if (typeof JSON !== 'object') {
 
         escapable.lastIndex = 0;
         return escapable.test(string) 
-        ? '"' + string.replace(escapable, function (a) {
-            var c = meta[a];
-            return typeof c === 'string'
-            ? c
-            : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-        }) + '"' 
-        : '"' + string + '"';
+            ? '"' + string.replace(escapable, function (a) {
+                var c = meta[a];
+                return typeof c === 'string'
+                    ? c
+                    : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+            }) + '"' 
+            : '"' + string + '"';
     }
 
 
@@ -296,8 +301,8 @@ if (typeof JSON !== 'object') {
 // JSON numbers must be finite. Encode non-finite numbers as null.
 
             return isFinite(value) 
-            ? String(value) 
-            : 'null';
+                ? String(value) 
+                : 'null';
 
         case 'boolean':
         case 'null':
@@ -341,10 +346,10 @@ if (typeof JSON !== 'object') {
 // brackets.
 
                 v = partial.length === 0
-                ? '[]'
-                : gap
-                    ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
-                    : '[' + partial.join(',') + ']';
+                    ? '[]'
+                    : gap
+                        ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
+                        : '[' + partial.join(',') + ']';
                 gap = mind;
                 return v;
             }
@@ -359,8 +364,8 @@ if (typeof JSON !== 'object') {
                         v = str(k, value);
                         if (v) {
                             partial.push(quote(k) + (gap 
-                            ? ': ' 
-                            : ':') + v);
+                                ? ': ' 
+                                : ':') + v);
                         }
                     }
                 }
@@ -373,8 +378,8 @@ if (typeof JSON !== 'object') {
                         v = str(k, value);
                         if (v) {
                             partial.push(quote(k) + (gap 
-                            ? ': ' 
-                            : ':') + v);
+                                ? ': ' 
+                                : ':') + v);
                         }
                     }
                 }
@@ -384,10 +389,10 @@ if (typeof JSON !== 'object') {
 // and wrap them in braces.
 
             v = partial.length === 0 
-            ? '{}'
-            : gap
-                ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
-                : '{' + partial.join(',') + '}';
+                ? '{}'
+                : gap
+                    ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
+                    : '{' + partial.join(',') + '}';
             gap = mind;
             return v;
         }
@@ -527,8 +532,8 @@ if (typeof JSON !== 'object') {
 // each name/value pair to a reviver function for possible transformation.
 
                 return typeof reviver === 'function'
-                ? walk({'': j}, '')
-                : j;
+                    ? walk({'': j}, '')
+                    : j;
             }
 
 // If the text is not JSON parseable, then a SyntaxError is thrown.
