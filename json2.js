@@ -1,6 +1,6 @@
 /*
     json2.js
-    2015-05-02
+    2015-05-03
 
     Public Domain.
 
@@ -17,7 +17,9 @@
 
 
     This file creates a global JSON object containing two methods: stringify
-    and parse.
+    and parse. This file is provides the ES5 JSON capability to ES3 systems.
+    If a project might run on IE8 or earlier, then this file should be included.
+    This file does nothing on ES5 systems.
 
         JSON.stringify(value, replacer, space)
             value       any JavaScript value, usually an object or array.
@@ -170,6 +172,13 @@ if (typeof JSON !== 'object') {
 
 (function () {
     'use strict';
+    
+    var rx_one = /^[\],:{}\s]*$/,
+        rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,
+        rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
+        rx_four = /(?:^|:|,)(?:\s*\[)+/g,
+        rx_escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
 
     function f(n) {
         // Format integers to have at least two digits.
@@ -201,9 +210,7 @@ if (typeof JSON !== 'object') {
         String.prototype.toJSON = this_value;
     }
 
-    var cx,
-        escapable,
-        gap,
+    var gap,
         indent,
         meta,
         rep;
@@ -216,13 +223,13 @@ if (typeof JSON !== 'object') {
 // Otherwise we must also replace the offending characters with safe escape
 // sequences.
 
-        escapable.lastIndex = 0;
-        return escapable.test(string) 
-            ? '"' + string.replace(escapable, function (a) {
+        rx_escapable.lastIndex = 0;
+        return rx_escapable.test(string) 
+            ? '"' + string.replace(rx_escapable, function (a) {
                 var c = meta[a];
                 return typeof c === 'string'
-                ? c
-                : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                    ? c
+                    : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
             }) + '"' 
             : '"' + string + '"';
     }
@@ -369,7 +376,6 @@ if (typeof JSON !== 'object') {
 // If the JSON object does not yet have a stringify method, give it one.
 
     if (typeof JSON.stringify !== 'function') {
-        escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
         meta = {    // table of character substitutions
             '\b': '\\b',
             '\t': '\\t',
@@ -426,7 +432,6 @@ if (typeof JSON !== 'object') {
 // If the JSON object does not yet have a parse method, give it one.
 
     if (typeof JSON.parse !== 'function') {
-        cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
         JSON.parse = function (text, reviver) {
 
 // The parse method takes a text and an optional reviver function, and returns
@@ -461,9 +466,9 @@ if (typeof JSON !== 'object') {
 // incorrectly, either silently deleting them, or treating them as line endings.
 
             text = String(text);
-            cx.lastIndex = 0;
-            if (cx.test(text)) {
-                text = text.replace(cx, function (a) {
+            rx_dangerous.lastIndex = 0;
+            if (rx_dangerous.test(text)) {
+                text = text.replace(rx_dangerous, function (a) {
                     return '\\u' +
                             ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
                 });
@@ -483,11 +488,11 @@ if (typeof JSON !== 'object') {
 // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
 
             if (
-                /^[\],:{}\s]*$/.test(
+                rx_one.test(
                     text
-                            .replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
-                            .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
-                            .replace(/(?:^|:|,)(?:\s*\[)+/g, '')
+                        .replace(rx_two, '@')
+                        .replace(rx_three, ']')
+                        .replace(rx_four, '')
                 )
             ) {
 
