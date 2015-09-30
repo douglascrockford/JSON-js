@@ -83,9 +83,9 @@ if (typeof JSON.decycle !== 'function') {
                     for (i = 0; i < value.length; i += 1) {
                         nu[i] = derez(value[i], path + '[' + i + ']');
                     }
-                } else {
+                } else if (typeof value.toJSON !== 'function') {
 
-// If it is an object, replicate the object.
+// If it is an object and does not take care of itself with toJSON(), replicate the object.
 
                     nu = {};
                     for (name in value) {
