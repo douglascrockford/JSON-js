@@ -2,9 +2,7 @@
     json_parse_state.js
     2015-05-02
 
-    Public Domain.
-
-    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+    Published under the Creative Commons Zero v1.0 Universal (CC0-1.0) license.
 
     This file creates a json_parse function.
 

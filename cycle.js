@@ -2,9 +2,7 @@
     cycle.js
     2015-02-25
 
-    Public Domain.
-
-    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+    Published under the Creative Commons Zero v1.0 Universal (CC0-1.0) license.
 
     This code should be minified before deployment.
     See http://javascript.crockford.com/jsmin.html
