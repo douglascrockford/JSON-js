@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "homepage": "https://github.com/JesselJohn/JSON-js",
   "authors": [
-    "Couglas Crockford"
+    "Douglas Crockford"
   ],
   "description": "Encode cyclical structures and dags in JSON, and to then recover them",
   "main": "cycle.js"
