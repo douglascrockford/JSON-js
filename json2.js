@@ -176,6 +176,33 @@ if (typeof JSON !== 'object') {
         return this.valueOf();
     }
 
+    try {
+
+// Chrome: "null"
+// Firefox: "null"
+// IE: "null"
+// node.js: "null"
+// phantomjs: "null"
+// Safari: exception! (RangeError: Invalid Date)
+
+        JSON.stringify(new Date(NaN));
+    } catch (e) {
+
+// The bug that causes the aberrant behavior in Safari is in
+// Date.prototype.toJSON.  Clear it out so that we redefine it to be
+// the same as the other browsers and avoid JSON.stringify bugs in
+// Safari.
+//
+// NOTE: while this bug was originally found in Safari, it might be
+// present in other WebKit browsers.  This is why a feature-detection
+// approach is being used instead of checking navigator.appName or
+// similar.  Also, keep in mind that Safari isn't "evergreen" like
+// Chrome or Firefox; an update to fix this bug would require an OSX or
+// iOS upgrade.
+
+        Date.prototype.toJSON = undefined;
+    }
+
     if (typeof Date.prototype.toJSON !== 'function') {
 
         Date.prototype.toJSON = function () {
