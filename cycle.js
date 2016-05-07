@@ -1,6 +1,6 @@
 /*
     cycle.js
-    2015-02-25
+    2016-05-01
 
     Public Domain.
 
@@ -15,60 +15,75 @@
 
 /*jslint eval, for */
 
-/*property 
-    $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
-    retrocycle, stringify, test, toString
+/*property
+    $ref, decycle, forEach, isArray, keys, length, push, retrocycle, stringify,
+    test
 */
 
-if (typeof JSON.decycle !== 'function') {
-    JSON.decycle = function decycle(object) {
-        'use strict';
+if (typeof JSON.decycle !== "function") {
+    JSON.decycle = function decycle(object, replacer) {
+        "use strict";
 
 // Make a deep copy of an object or array, assuring that there is at most
 // one instance of each object or array in the resulting structure. The
 // duplicate references (which might be forming cycles) are replaced with
 // an object of the form
-//      {$ref: PATH}
+
+//      {"$ref": PATH}
+
 // where the PATH is a JSONPath string that locates the first occurance.
+
 // So,
+
 //      var a = [];
 //      a[0] = a;
 //      return JSON.stringify(JSON.decycle(a));
+
 // produces the string '[{"$ref":"$"}]'.
 
+// If a replacer function is provided, then it will be called for each value.
+// A replacer function receives a value and returns a replacement value.
+
 // JSONPath is used to locate the unique object. $ indicates the top level of
-// the object or array. [NUMBER] or [STRING] indicates a child member or
+// the object or array. [NUMBER] or [STRING] indicates a child element or
 // property.
 
-        var objects = [],   // Keep a reference to each unique object or array
-            paths = [];     // Keep the path to each unique object or array
+        var objects = [];   // Keep a reference to each unique object or array
+        var paths = [];     // Keep the path to each unique object or array
 
         return (function derez(value, path) {
 
-// The derez recurses through the object, producing the deep copy.
+// The derez function recurses through the object, producing the deep copy.
 
-            var i,          // The loop counter
-                name,       // Property name
-                nu;         // The new object or array
+            var i;          // The loop counter
+            var nu;         // The new object or array
 
-// typeof null === 'object', so go on if this value is really an object but not
+// If a replacer function was provided, then call it to get a replacement value.
+
+            if (replacer !== undefined) {
+                value = replacer(value);
+            }
+
+// typeof null === "object", so go on if this value is really an object but not
 // one of the weird builtin objects.
 
-            if (typeof value === 'object' && value !== null &&
-                    !(value instanceof Boolean) &&
-                    !(value instanceof Date) &&
-                    !(value instanceof Number) &&
-                    !(value instanceof RegExp) &&
-                    !(value instanceof String)) {
+            if (
+                typeof value === "object" && value !== null &&
+                !(value instanceof Boolean) &&
+                !(value instanceof Date) &&
+                !(value instanceof Number) &&
+                !(value instanceof RegExp) &&
+                !(value instanceof String)
+            ) {
 
 // If the value is an object or array, look to see if we have already
-// encountered it. If so, return a $ref/path object. This is a hard way,
+// encountered it. If so, return a {"$ref":PATH} object. This is a hard
 // linear search that will get slower as the number of unique objects grows.
+// Someday, this should be replaced with an ES6 WeakMap.
 
-                for (i = 0; i < objects.length; i += 1) {
-                    if (objects[i] === value) {
-                        return {$ref: paths[i]};
-                    }
+                i = objects.indexOf(value);
+                if (i >= 0) {
+                    return {$ref: paths[i]};
                 }
 
 // Otherwise, accumulate the unique value and its path.
@@ -78,34 +93,34 @@ if (typeof JSON.decycle !== 'function') {
 
 // If it is an array, replicate the array.
 
-                if (Object.prototype.toString.apply(value) === '[object Array]') {
+                if (Array.isArray(value)) {
                     nu = [];
-                    for (i = 0; i < value.length; i += 1) {
-                        nu[i] = derez(value[i], path + '[' + i + ']');
-                    }
+                    value.forEach(function (element, i) {
+                        nu[i] = derez(element, path + "[" + i + "]");
+                    });
                 } else {
 
 // If it is an object, replicate the object.
 
                     nu = {};
-                    for (name in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, name)) {
-                            nu[name] = derez(value[name],
-                                    path + '[' + JSON.stringify(name) + ']');
-                        }
-                    }
+                    Object.keys(value).forEach(function (name) {
+                        nu[name] = derez(
+                            value[name],
+                            path + "[" + JSON.stringify(name) + "]"
+                        );
+                    });
                 }
                 return nu;
             }
             return value;
-        }(object, '$'));
+        }(object, "$"));
     };
 }
 
 
-if (typeof JSON.retrocycle !== 'function') {
+if (typeof JSON.retrocycle !== "function") {
     JSON.retrocycle = function retrocycle($) {
-        'use strict';
+        "use strict";
 
 // Restore an object that was reduced by decycle. Members whose values are
 // objects of the form
@@ -135,35 +150,30 @@ if (typeof JSON.retrocycle !== 'function') {
 // replaces the $ref object with a reference to the value that is found by
 // the path.
 
-            var i, item, name, path;
-
-            if (value && typeof value === 'object') {
-                if (Object.prototype.toString.apply(value) === '[object Array]') {
-                    for (i = 0; i < value.length; i += 1) {
-                        item = value[i];
-                        if (item && typeof item === 'object') {
-                            path = item.$ref;
-                            if (typeof path === 'string' && px.test(path)) {
+            if (value && typeof value === "object") {
+                if (Array.isArray(value)) {
+                    value.forEach(function (element, i) {
+                        if (typeof element === "object" && element !== null) {
+                            var path = element.$ref;
+                            if (typeof path === "string" && px.test(path)) {
                                 value[i] = eval(path);
+                            } else {
+                                rez(element);
+                            }
+                        }
+                    });
+                } else {
+                    Object.keys(value).forEach(function (name) {
+                        var item = value[name];
+                        if (typeof item === "object" && item !== null) {
+                            var path = item.$ref;
+                            if (typeof path === "string" && px.test(path)) {
+                                value[name] = eval(path);
                             } else {
                                 rez(item);
                             }
                         }
-                    }
-                } else {
-                    for (name in value) {
-                        if (typeof value[name] === 'object') {
-                            item = value[name];
-                            if (item) {
-                                path = item.$ref;
-                                if (typeof path === 'string' && px.test(path)) {
-                                    value[name] = eval(path);
-                                } else {
-                                    rez(item);
-                                }
-                            }
-                        }
-                    }
+                    });
                 }
             }
         }($));
