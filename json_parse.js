@@ -1,6 +1,6 @@
 /*
     json_parse.js
-    2015-05-02
+    2016-05-02
 
     Public Domain.
 
@@ -25,7 +25,7 @@
 
             myData = json_parse(text, function (key, value) {
                 var a;
-                if (typeof value === 'string') {
+                if (typeof value === "string") {
                     a =
 /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
                     if (a) {
@@ -67,14 +67,14 @@ var json_parse = (function () {
     var at;     // The index of the current character
     var ch;     // The current character
     var escapee = {
-        '"': '"',
-        '\\': '\\',
-        '/': '/',
-        b: '\b',
-        f: '\f',
-        n: '\n',
-        r: '\r',
-        t: '\t'
+        "\"": "\"",
+        "\\": "\\",
+        "/": "/",
+        b: "\b",
+        f: "\f",
+        n: "\n",
+        r: "\r",
+        t: "\t"
     };
     var text;
 
@@ -83,7 +83,7 @@ var json_parse = (function () {
 // Call error when something is wrong.
 
         throw {
-            name: 'SyntaxError',
+            name: "SyntaxError",
             message: m,
             at: at,
             text: text
@@ -110,40 +110,40 @@ var json_parse = (function () {
 
 // Parse a number value.
 
-        var number;
-        var string = '';
+        var value;
+        var string = "";
 
-        if (ch === '-') {
-            string = '-';
-            next('-');
+        if (ch === "-") {
+            string = "-";
+            next("-");
         }
-        while (ch >= '0' && ch <= '9') {
+        while (ch >= "0" && ch <= "9") {
             string += ch;
             next();
         }
-        if (ch === '.') {
-            string += '.';
-            while (next() && ch >= '0' && ch <= '9') {
+        if (ch === ".") {
+            string += ".";
+            while (next() && ch >= "0" && ch <= "9") {
                 string += ch;
             }
         }
-        if (ch === 'e' || ch === 'E') {
+        if (ch === "e" || ch === "E") {
             string += ch;
             next();
-            if (ch === '-' || ch === '+') {
+            if (ch === "-" || ch === "+") {
                 string += ch;
                 next();
             }
-            while (ch >= '0' && ch <= '9') {
+            while (ch >= "0" && ch <= "9") {
                 string += ch;
                 next();
             }
         }
-        number = +string;
-        if (!isFinite(number)) {
+        value = +string;
+        if (!isFinite(value)) {
             error("Bad number");
         } else {
-            return number;
+            return value;
         }
     };
 
@@ -153,20 +153,20 @@ var json_parse = (function () {
 
         var hex;
         var i;
-        var string = '';
+        var value = "";
         var uffff;
 
 // When parsing for string values, we must look for " and \ characters.
 
-        if (ch === '"') {
+        if (ch === "\"") {
             while (next()) {
-                if (ch === '"') {
+                if (ch === "\"") {
                     next();
-                    return string;
+                    return value;
                 }
-                if (ch === '\\') {
+                if (ch === "\\") {
                     next();
-                    if (ch === 'u') {
+                    if (ch === "u") {
                         uffff = 0;
                         for (i = 0; i < 4; i += 1) {
                             hex = parseInt(next(), 16);
@@ -175,14 +175,14 @@ var json_parse = (function () {
                             }
                             uffff = uffff * 16 + hex;
                         }
-                        string += String.fromCharCode(uffff);
-                    } else if (typeof escapee[ch] === 'string') {
-                        string += escapee[ch];
+                        value += String.fromCharCode(uffff);
+                    } else if (typeof escapee[ch] === "string") {
+                        value += escapee[ch];
                     } else {
                         break;
                     }
                 } else {
-                    string += ch;
+                    value += ch;
                 }
             }
         }
@@ -193,7 +193,7 @@ var json_parse = (function () {
 
 // Skip whitespace.
 
-        while (ch && ch <= ' ') {
+        while (ch && ch <= " ") {
             next();
         }
     };
@@ -203,24 +203,24 @@ var json_parse = (function () {
 // true, false, or null.
 
         switch (ch) {
-        case 't':
-            next('t');
-            next('r');
-            next('u');
-            next('e');
+        case "t":
+            next("t");
+            next("r");
+            next("u");
+            next("e");
             return true;
-        case 'f':
-            next('f');
-            next('a');
-            next('l');
-            next('s');
-            next('e');
+        case "f":
+            next("f");
+            next("a");
+            next("l");
+            next("s");
+            next("e");
             return false;
-        case 'n':
-            next('n');
-            next('u');
-            next('l');
-            next('l');
+        case "n":
+            next("n");
+            next("u");
+            next("l");
+            next("l");
             return null;
         }
         error("Unexpected '" + ch + "'");
@@ -232,23 +232,23 @@ var json_parse = (function () {
 
 // Parse an array value.
 
-        var array = [];
+        var arr = [];
 
-        if (ch === '[') {
-            next('[');
+        if (ch === "[") {
+            next("[");
             white();
-            if (ch === ']') {
-                next(']');
-                return array;   // empty array
+            if (ch === "]") {
+                next("]");
+                return arr;   // empty array
             }
             while (ch) {
-                array.push(value());
+                arr.push(value());
                 white();
-                if (ch === ']') {
-                    next(']');
-                    return array;
+                if (ch === "]") {
+                    next("]");
+                    return arr;
                 }
-                next(',');
+                next(",");
                 white();
             }
         }
@@ -260,29 +260,29 @@ var json_parse = (function () {
 // Parse an object value.
 
         var key;
-        var object = {};
+        var obj = {};
 
-        if (ch === '{') {
-            next('{');
+        if (ch === "{") {
+            next("{");
             white();
-            if (ch === '}') {
-                next('}');
-                return object;   // empty object
+            if (ch === "}") {
+                next("}");
+                return obj;   // empty object
             }
             while (ch) {
                 key = string();
                 white();
-                next(':');
-                if (Object.hasOwnProperty.call(object, key)) {
-                    error('Duplicate key "' + key + '"');
+                next(":");
+                if (Object.hasOwnProperty.call(obj, key)) {
+                    error("Duplicate key '" + key + "'");
                 }
-                object[key] = value();
+                obj[key] = value();
                 white();
-                if (ch === '}') {
-                    next('}');
-                    return object;
+                if (ch === "}") {
+                    next("}");
+                    return obj;
                 }
-                next(',');
+                next(",");
                 white();
             }
         }
@@ -296,16 +296,16 @@ var json_parse = (function () {
 
         white();
         switch (ch) {
-        case '{':
+        case "{":
             return object();
-        case '[':
+        case "[":
             return array();
-        case '"':
+        case "\"":
             return string();
-        case '-':
+        case "-":
             return number();
         default:
-            return (ch >= '0' && ch <= '9')
+            return (ch >= "0" && ch <= "9")
                 ? number()
                 : word();
         }
@@ -319,7 +319,7 @@ var json_parse = (function () {
 
         text = source;
         at = 0;
-        ch = ' ';
+        ch = " ";
         result = value();
         white();
         if (ch) {
@@ -332,25 +332,25 @@ var json_parse = (function () {
 // in an empty key. If there is not a reviver function, we simply return the
 // result.
 
-        return (typeof reviver === 'function')
+        return (typeof reviver === "function")
             ? (function walk(holder, key) {
                 var k;
                 var v;
-                var value = holder[key];
-                if (value && typeof value === 'object') {
-                    for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
+                var val = holder[key];
+                if (val && typeof val === "object") {
+                    for (k in val) {
+                        if (Object.prototype.hasOwnProperty.call(val, k)) {
+                            v = walk(val, k);
                             if (v !== undefined) {
-                                value[k] = v;
+                                val[k] = v;
                             } else {
-                                delete value[k];
+                                delete val[k];
                             }
                         }
                     }
                 }
-                return reviver.call(holder, key, value);
-            }({'': result}, ''))
+                return reviver.call(holder, key, val);
+            }({"": result}, ""))
             : result;
     };
 }());
