@@ -10,7 +10,7 @@
 //  NOT CONTROL.
 
 //  This file creates a global JSON object containing two methods: stringify
-//  and parse. This file is provides the ES5 JSON capability to ES3 systems.
+//  and parse. This file provides the ES5 JSON capability to ES3 systems.
 //  If a project might run on IE8 or earlier, then this file should be included.
 //  This file does nothing on ES5 systems.
 
