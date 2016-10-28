@@ -16,8 +16,8 @@
 /*jslint eval, for */
 
 /*property
-    $ref, decycle, forEach, isArray, keys, length, push, retrocycle, stringify,
-    test
+    $ref, decycle, forEach, indexOf, isArray, keys, length, push, retrocycle,
+    stringify, test
 */
 
 if (typeof JSON.decycle !== "function") {
@@ -141,7 +141,7 @@ if (typeof JSON.retrocycle !== "function") {
 //      return JSON.retrocycle(JSON.parse(s));
 // produces an array containing a single element which is the array itself.
 
-        var px = /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
+        var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\([\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/;
 
         (function rez(value) {
 

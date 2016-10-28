@@ -1,5 +1,5 @@
 //  json2.js
-//  2016-05-01
+//  2016-10-28
 //  Public Domain.
 //  NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 //  See http://www.JSON.org/js.html
@@ -10,7 +10,7 @@
 //  NOT CONTROL.
 
 //  This file creates a global JSON object containing two methods: stringify
-//  and parse. This file is provides the ES5 JSON capability to ES3 systems.
+//  and parse. This file provides the ES5 JSON capability to ES3 systems.
 //  If a project might run on IE8 or earlier, then this file should be included.
 //  This file does nothing on ES5 systems.
 
@@ -162,7 +162,7 @@ if (typeof JSON !== "object") {
     var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
     var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
     var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
-    var rx_escapable = /[\\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+    var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
     var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
 
     function f(n) {
