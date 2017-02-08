@@ -77,6 +77,14 @@ if (typeof JSON.decycle !== "function") {
                 !(value instanceof String)
             ) {
 
+                // these "objects" should all pass-through and not be handled by 'decycle'
+                if (value instanceof Date || value instanceof Boolean || 
+                    value instanceof String || value instanceof Number || 
+                    value instanceof RegExp
+                ) {
+                    return value;
+                }
+
 // If the value is an object or array, look to see if we have already
 // encountered it. If so, return a {"$ref":PATH} object. This uses an
 // ES6 WeakMap.
