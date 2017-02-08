@@ -1,6 +1,6 @@
 /*
     cycle.js
-    2016-05-01
+    2017-02-07
 
     Public Domain.
 
@@ -13,11 +13,13 @@
     NOT CONTROL.
 */
 
-/*jslint eval, for */
+// The file uses the WeakMap feature of ES6.
+
+/*jslint es6, eval */
 
 /*property
-    $ref, decycle, forEach, indexOf, isArray, keys, length, push, retrocycle,
-    stringify, test
+    $ref, decycle, forEach, get, indexOf, isArray, keys, length, push,
+    retrocycle, set, stringify, test
 */
 
 if (typeof JSON.decycle !== "function") {
@@ -48,14 +50,13 @@ if (typeof JSON.decycle !== "function") {
 // the object or array. [NUMBER] or [STRING] indicates a child element or
 // property.
 
-        var objects = [];   // Keep a reference to each unique object or array
-        var paths = [];     // Keep the path to each unique object or array
+        var objects = new WeakMap();     // object to path mappings
 
         return (function derez(value, path) {
 
 // The derez function recurses through the object, producing the deep copy.
 
-            var i;          // The loop counter
+            var old_path;   // The path of an earlier occurance of value
             var nu;         // The new object or array
 
 // If a replacer function was provided, then call it to get a replacement value.
@@ -77,19 +78,17 @@ if (typeof JSON.decycle !== "function") {
             ) {
 
 // If the value is an object or array, look to see if we have already
-// encountered it. If so, return a {"$ref":PATH} object. This is a hard
-// linear search that will get slower as the number of unique objects grows.
-// Someday, this should be replaced with an ES6 WeakMap.
+// encountered it. If so, return a {"$ref":PATH} object. This uses an
+// ES6 WeakMap.
 
-                i = objects.indexOf(value);
-                if (i >= 0) {
-                    return {$ref: paths[i]};
+                old_path = objects.get(value);
+                if (old_path !== undefined) {
+                    return {$ref: old_path};
                 }
 
 // Otherwise, accumulate the unique value and its path.
 
-                objects.push(value);
-                paths.push(path);
+                objects.set(value, path);
 
 // If it is an array, replicate the array.
 
