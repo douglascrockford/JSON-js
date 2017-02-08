@@ -10,6 +10,9 @@ douglas@crockford.com
 JSON is a light-weight, language independent, data interchange format.
 See http://www.JSON.org/
 
+JSON in Javascript is licensed under the public domain. No warranty is expressed
+or implied. Use at your own risk.
+
 The files in this collection implement JSON encoders/decoders in JavaScript.
 
 JSON became a built-in feature of JavaScript when the ECMAScript Programming
@@ -38,3 +41,4 @@ cycle.js: This file contains two functions, JSON.decycle and JSON.retrocycle,
 which make it possible to encode cyclical structures and dags in JSON, and to
 then recover them. This is a capability that is not provided by ES5. JSONPath 
 is used to represent the links. [http://GOESSNER.net/articles/JsonPath/]
+
