@@ -1,6 +1,6 @@
 /*
     json_parse.js
-    2015-05-02
+    2016-05-02
 
     Public Domain.
 
@@ -25,7 +25,7 @@
 
             myData = json_parse(text, function (key, value) {
                 var a;
-                if (typeof value === 'string') {
+                if (typeof value === "string") {
                     a =
 /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
                     if (a) {
@@ -48,8 +48,8 @@
 
 /*jslint for */
 
-/*property 
-    at, b, call, charAt, f, fromCharCode, hasOwnProperty, message, n, name, 
+/*property
+    at, b, call, charAt, f, fromCharCode, hasOwnProperty, message, n, name,
     prototype, push, r, t, text
 */
 
@@ -64,230 +64,230 @@ var json_parse = (function () {
 // We are defining the function inside of another function to avoid creating
 // global variables.
 
-    var at,     // The index of the current character
-        ch,     // The current character
-        escapee = {
-            '"': '"',
-            '\\': '\\',
-            '/': '/',
-            b: '\b',
-            f: '\f',
-            n: '\n',
-            r: '\r',
-            t: '\t'
-        },
-        text,
+    var at;     // The index of the current character
+    var ch;     // The current character
+    var escapee = {
+        "\"": "\"",
+        "\\": "\\",
+        "/": "/",
+        b: "\b",
+        f: "\f",
+        n: "\n",
+        r: "\r",
+        t: "\t"
+    };
+    var text;
 
-        error = function (m) {
+    var error = function (m) {
 
 // Call error when something is wrong.
 
-            throw {
-                name: 'SyntaxError',
-                message: m,
-                at: at,
-                text: text
-            };
-        },
+        throw {
+            name: "SyntaxError",
+            message: m,
+            at: at,
+            text: text
+        };
+    };
 
-        next = function (c) {
+    var next = function (c) {
 
 // If a c parameter is provided, verify that it matches the current character.
 
-            if (c && c !== ch) {
-                error("Expected '" + c + "' instead of '" + ch + "'");
-            }
+        if (c && c !== ch) {
+            error("Expected '" + c + "' instead of '" + ch + "'");
+        }
 
 // Get the next character. When there are no more characters,
 // return the empty string.
 
-            ch = text.charAt(at);
-            at += 1;
-            return ch;
-        },
+        ch = text.charAt(at);
+        at += 1;
+        return ch;
+    };
 
-        number = function () {
+    var number = function () {
 
 // Parse a number value.
 
-            var number,
-                string = '';
+        var value;
+        var string = "";
 
-            if (ch === '-') {
-                string = '-';
-                next('-');
+        if (ch === "-") {
+            string = "-";
+            next("-");
+        }
+        while (ch >= "0" && ch <= "9") {
+            string += ch;
+            next();
+        }
+        if (ch === ".") {
+            string += ".";
+            while (next() && ch >= "0" && ch <= "9") {
+                string += ch;
             }
-            while (ch >= '0' && ch <= '9') {
+        }
+        if (ch === "e" || ch === "E") {
+            string += ch;
+            next();
+            if (ch === "-" || ch === "+") {
                 string += ch;
                 next();
             }
-            if (ch === '.') {
-                string += '.';
-                while (next() && ch >= '0' && ch <= '9') {
-                    string += ch;
-                }
-            }
-            if (ch === 'e' || ch === 'E') {
+            while (ch >= "0" && ch <= "9") {
                 string += ch;
                 next();
-                if (ch === '-' || ch === '+') {
-                    string += ch;
-                    next();
-                }
-                while (ch >= '0' && ch <= '9') {
-                    string += ch;
-                    next();
-                }
             }
-            number = +string;
-            if (!isFinite(number)) {
-                error("Bad number");
-            } else {
-                return number;
-            }
-        },
+        }
+        value = +string;
+        if (!isFinite(value)) {
+            error("Bad number");
+        } else {
+            return value;
+        }
+    };
 
-        string = function () {
+    var string = function () {
 
 // Parse a string value.
 
-            var hex,
-                i,
-                string = '',
-                uffff;
+        var hex;
+        var i;
+        var value = "";
+        var uffff;
 
 // When parsing for string values, we must look for " and \ characters.
 
-            if (ch === '"') {
-                while (next()) {
-                    if (ch === '"') {
-                        next();
-                        return string;
-                    }
-                    if (ch === '\\') {
-                        next();
-                        if (ch === 'u') {
-                            uffff = 0;
-                            for (i = 0; i < 4; i += 1) {
-                                hex = parseInt(next(), 16);
-                                if (!isFinite(hex)) {
-                                    break;
-                                }
-                                uffff = uffff * 16 + hex;
+        if (ch === "\"") {
+            while (next()) {
+                if (ch === "\"") {
+                    next();
+                    return value;
+                }
+                if (ch === "\\") {
+                    next();
+                    if (ch === "u") {
+                        uffff = 0;
+                        for (i = 0; i < 4; i += 1) {
+                            hex = parseInt(next(), 16);
+                            if (!isFinite(hex)) {
+                                break;
                             }
-                            string += String.fromCharCode(uffff);
-                        } else if (typeof escapee[ch] === 'string') {
-                            string += escapee[ch];
-                        } else {
-                            break;
+                            uffff = uffff * 16 + hex;
                         }
+                        value += String.fromCharCode(uffff);
+                    } else if (typeof escapee[ch] === "string") {
+                        value += escapee[ch];
                     } else {
-                        string += ch;
+                        break;
                     }
+                } else {
+                    value += ch;
                 }
             }
-            error("Bad string");
-        },
+        }
+        error("Bad string");
+    };
 
-        white = function () {
+    var white = function () {
 
 // Skip whitespace.
 
-            while (ch && ch <= ' ') {
-                next();
-            }
-        },
+        while (ch && ch <= " ") {
+            next();
+        }
+    };
 
-        word = function () {
+    var word = function () {
 
 // true, false, or null.
 
-            switch (ch) {
-            case 't':
-                next('t');
-                next('r');
-                next('u');
-                next('e');
-                return true;
-            case 'f':
-                next('f');
-                next('a');
-                next('l');
-                next('s');
-                next('e');
-                return false;
-            case 'n':
-                next('n');
-                next('u');
-                next('l');
-                next('l');
-                return null;
-            }
-            error("Unexpected '" + ch + "'");
-        },
+        switch (ch) {
+        case "t":
+            next("t");
+            next("r");
+            next("u");
+            next("e");
+            return true;
+        case "f":
+            next("f");
+            next("a");
+            next("l");
+            next("s");
+            next("e");
+            return false;
+        case "n":
+            next("n");
+            next("u");
+            next("l");
+            next("l");
+            return null;
+        }
+        error("Unexpected '" + ch + "'");
+    };
 
-        value,  // Place holder for the value function.
+    var value;  // Place holder for the value function.
 
-        array = function () {
+    var array = function () {
 
 // Parse an array value.
 
-            var array = [];
+        var arr = [];
 
-            if (ch === '[') {
-                next('[');
-                white();
-                if (ch === ']') {
-                    next(']');
-                    return array;   // empty array
-                }
-                while (ch) {
-                    array.push(value());
-                    white();
-                    if (ch === ']') {
-                        next(']');
-                        return array;
-                    }
-                    next(',');
-                    white();
-                }
+        if (ch === "[") {
+            next("[");
+            white();
+            if (ch === "]") {
+                next("]");
+                return arr;   // empty array
             }
-            error("Bad array");
-        },
+            while (ch) {
+                arr.push(value());
+                white();
+                if (ch === "]") {
+                    next("]");
+                    return arr;
+                }
+                next(",");
+                white();
+            }
+        }
+        error("Bad array");
+    };
 
-        object = function () {
+    var object = function () {
 
 // Parse an object value.
 
-            var key,
-                object = {};
+        var key;
+        var obj = {};
 
-            if (ch === '{') {
-                next('{');
-                white();
-                if (ch === '}') {
-                    next('}');
-                    return object;   // empty object
-                }
-                while (ch) {
-                    key = string();
-                    white();
-                    next(':');
-                    if (Object.hasOwnProperty.call(object, key)) {
-                        error('Duplicate key "' + key + '"');
-                    }
-                    object[key] = value();
-                    white();
-                    if (ch === '}') {
-                        next('}');
-                        return object;
-                    }
-                    next(',');
-                    white();
-                }
+        if (ch === "{") {
+            next("{");
+            white();
+            if (ch === "}") {
+                next("}");
+                return obj;   // empty object
             }
-            error("Bad object");
-        };
+            while (ch) {
+                key = string();
+                white();
+                next(":");
+                if (Object.hasOwnProperty.call(obj, key)) {
+                    error("Duplicate key '" + key + "'");
+                }
+                obj[key] = value();
+                white();
+                if (ch === "}") {
+                    next("}");
+                    return obj;
+                }
+                next(",");
+                white();
+            }
+        }
+        error("Bad object");
+    };
 
     value = function () {
 
@@ -296,17 +296,17 @@ var json_parse = (function () {
 
         white();
         switch (ch) {
-        case '{':
+        case "{":
             return object();
-        case '[':
+        case "[":
             return array();
-        case '"':
+        case "\"":
             return string();
-        case '-':
+        case "-":
             return number();
         default:
-            return ch >= '0' && ch <= '9' 
-                ? number() 
+            return (ch >= "0" && ch <= "9")
+                ? number()
                 : word();
         }
     };
@@ -319,7 +319,7 @@ var json_parse = (function () {
 
         text = source;
         at = 0;
-        ch = ' ';
+        ch = " ";
         result = value();
         white();
         if (ch) {
@@ -332,23 +332,25 @@ var json_parse = (function () {
 // in an empty key. If there is not a reviver function, we simply return the
 // result.
 
-        return typeof reviver === 'function'
+        return (typeof reviver === "function")
             ? (function walk(holder, key) {
-                var k, v, value = holder[key];
-                if (value && typeof value === 'object') {
-                    for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
+                var k;
+                var v;
+                var val = holder[key];
+                if (val && typeof val === "object") {
+                    for (k in val) {
+                        if (Object.prototype.hasOwnProperty.call(val, k)) {
+                            v = walk(val, k);
                             if (v !== undefined) {
-                                value[k] = v;
+                                val[k] = v;
                             } else {
-                                delete value[k];
+                                delete val[k];
                             }
                         }
                     }
                 }
-                return reviver.call(holder, key, value);
-            }({'': result}, ''))
+                return reviver.call(holder, key, val);
+            }({"": result}, ""))
             : result;
     };
 }());

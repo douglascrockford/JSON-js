@@ -1,6 +1,6 @@
 /*
     json_parse_state.js
-    2015-05-02
+    2016-05-02
 
     Public Domain.
 
@@ -25,7 +25,7 @@
 
             myData = json_parse(text, function (key, value) {
                 var a;
-                if (typeof value === 'string') {
+                if (typeof value === "string") {
                     a =
 /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
                     if (a) {
@@ -61,7 +61,7 @@ var json_parse = (function () {
 // This function creates a JSON parse function that uses a state machine rather
 // than the dangerous eval function to parse a JSON text.
 
-    var state,      // The state of the parser, one of
+    var state;      // The state of the parser, one of
                     // 'go'         The starting state
                     // 'ok'         The final, accepting state
                     // 'firstokey'  Ready for the first key of the object or
@@ -74,214 +74,214 @@ var json_parse = (function () {
                     //              an empty array
                     // 'avalue'     Ready for the next value of an array
                     // 'acomma'     Ready for a comma or closing ]
-        stack,      // The stack, for controlling nesting.
-        container,  // The current container object or array
-        key,        // The current key
-        value,      // The current value
-        escapes = { // Escapement translation table
-            '\\': '\\',
-            '"': '"',
-            '/': '/',
-            't': '\t',
-            'n': '\n',
-            'r': '\r',
-            'f': '\f',
-            'b': '\b'
+    var stack;      // The stack, for controlling nesting.
+    var container;  // The current container object or array
+    var key;        // The current key
+    var value;      // The current value
+    var escapes = { // Escapement translation table
+        "\\": "\\",
+        "\"": "\"",
+        "/": "/",
+        "t": "\t",
+        "n": "\n",
+        "r": "\r",
+        "f": "\f",
+        "b": "\b"
+    };
+    var string = {   // The actions for string tokens
+        go: function () {
+            state = "ok";
         },
-        string = {   // The actions for string tokens
-            go: function () {
-                state = 'ok';
-            },
-            firstokey: function () {
-                key = value;
-                state = 'colon';
-            },
-            okey: function () {
-                key = value;
-                state = 'colon';
-            },
-            ovalue: function () {
-                state = 'ocomma';
-            },
-            firstavalue: function () {
-                state = 'acomma';
-            },
-            avalue: function () {
-                state = 'acomma';
-            }
+        firstokey: function () {
+            key = value;
+            state = "colon";
         },
-        number = {   // The actions for number tokens
-            go: function () {
-                state = 'ok';
-            },
-            ovalue: function () {
-                state = 'ocomma';
-            },
-            firstavalue: function () {
-                state = 'acomma';
-            },
-            avalue: function () {
-                state = 'acomma';
-            }
+        okey: function () {
+            key = value;
+            state = "colon";
         },
-        action = {
+        ovalue: function () {
+            state = "ocomma";
+        },
+        firstavalue: function () {
+            state = "acomma";
+        },
+        avalue: function () {
+            state = "acomma";
+        }
+    };
+    var number = {   // The actions for number tokens
+        go: function () {
+            state = "ok";
+        },
+        ovalue: function () {
+            state = "ocomma";
+        },
+        firstavalue: function () {
+            state = "acomma";
+        },
+        avalue: function () {
+            state = "acomma";
+        }
+    };
+    var action = {
 
 // The action table describes the behavior of the machine. It contains an
 // object for each token. Each object contains a method that is called when
 // a token is matched in a state. An object will lack a method for illegal
 // states.
 
-            '{': {
-                go: function () {
-                    stack.push({state: 'ok'});
-                    container = {};
-                    state = 'firstokey';
-                },
-                ovalue: function () {
-                    stack.push({container: container, state: 'ocomma', key: key});
-                    container = {};
-                    state = 'firstokey';
-                },
-                firstavalue: function () {
-                    stack.push({container: container, state: 'acomma'});
-                    container = {};
-                    state = 'firstokey';
-                },
-                avalue: function () {
-                    stack.push({container: container, state: 'acomma'});
-                    container = {};
-                    state = 'firstokey';
-                }
+        "{": {
+            go: function () {
+                stack.push({state: "ok"});
+                container = {};
+                state = "firstokey";
             },
-            '}': {
-                firstokey: function () {
-                    var pop = stack.pop();
-                    value = container;
-                    container = pop.container;
-                    key = pop.key;
-                    state = pop.state;
-                },
-                ocomma: function () {
-                    var pop = stack.pop();
-                    container[key] = value;
-                    value = container;
-                    container = pop.container;
-                    key = pop.key;
-                    state = pop.state;
-                }
+            ovalue: function () {
+                stack.push({container: container, state: "ocomma", key: key});
+                container = {};
+                state = "firstokey";
             },
-            '[': {
-                go: function () {
-                    stack.push({state: 'ok'});
-                    container = [];
-                    state = 'firstavalue';
-                },
-                ovalue: function () {
-                    stack.push({container: container, state: 'ocomma', key: key});
-                    container = [];
-                    state = 'firstavalue';
-                },
-                firstavalue: function () {
-                    stack.push({container: container, state: 'acomma'});
-                    container = [];
-                    state = 'firstavalue';
-                },
-                avalue: function () {
-                    stack.push({container: container, state: 'acomma'});
-                    container = [];
-                    state = 'firstavalue';
-                }
+            firstavalue: function () {
+                stack.push({container: container, state: "acomma"});
+                container = {};
+                state = "firstokey";
             },
-            ']': {
-                firstavalue: function () {
-                    var pop = stack.pop();
-                    value = container;
-                    container = pop.container;
-                    key = pop.key;
-                    state = pop.state;
-                },
-                acomma: function () {
-                    var pop = stack.pop();
-                    container.push(value);
-                    value = container;
-                    container = pop.container;
-                    key = pop.key;
-                    state = pop.state;
-                }
-            },
-            ':': {
-                colon: function () {
-                    if (Object.hasOwnProperty.call(container, key)) {
-                        throw new SyntaxError('Duplicate key "' + key + '"');
-                    }
-                    state = 'ovalue';
-                }
-            },
-            ',': {
-                ocomma: function () {
-                    container[key] = value;
-                    state = 'okey';
-                },
-                acomma: function () {
-                    container.push(value);
-                    state = 'avalue';
-                }
-            },
-            'true': {
-                go: function () {
-                    value = true;
-                    state = 'ok';
-                },
-                ovalue: function () {
-                    value = true;
-                    state = 'ocomma';
-                },
-                firstavalue: function () {
-                    value = true;
-                    state = 'acomma';
-                },
-                avalue: function () {
-                    value = true;
-                    state = 'acomma';
-                }
-            },
-            'false': {
-                go: function () {
-                    value = false;
-                    state = 'ok';
-                },
-                ovalue: function () {
-                    value = false;
-                    state = 'ocomma';
-                },
-                firstavalue: function () {
-                    value = false;
-                    state = 'acomma';
-                },
-                avalue: function () {
-                    value = false;
-                    state = 'acomma';
-                }
-            },
-            'null': {
-                go: function () {
-                    value = null;
-                    state = 'ok';
-                },
-                ovalue: function () {
-                    value = null;
-                    state = 'ocomma';
-                },
-                firstavalue: function () {
-                    value = null;
-                    state = 'acomma';
-                },
-                avalue: function () {
-                    value = null;
-                    state = 'acomma';
-                }
+            avalue: function () {
+                stack.push({container: container, state: "acomma"});
+                container = {};
+                state = "firstokey";
             }
-        };
+        },
+        "}": {
+            firstokey: function () {
+                var pop = stack.pop();
+                value = container;
+                container = pop.container;
+                key = pop.key;
+                state = pop.state;
+            },
+            ocomma: function () {
+                var pop = stack.pop();
+                container[key] = value;
+                value = container;
+                container = pop.container;
+                key = pop.key;
+                state = pop.state;
+            }
+        },
+        "[": {
+            go: function () {
+                stack.push({state: "ok"});
+                container = [];
+                state = "firstavalue";
+            },
+            ovalue: function () {
+                stack.push({container: container, state: "ocomma", key: key});
+                container = [];
+                state = "firstavalue";
+            },
+            firstavalue: function () {
+                stack.push({container: container, state: "acomma"});
+                container = [];
+                state = "firstavalue";
+            },
+            avalue: function () {
+                stack.push({container: container, state: "acomma"});
+                container = [];
+                state = "firstavalue";
+            }
+        },
+        "]": {
+            firstavalue: function () {
+                var pop = stack.pop();
+                value = container;
+                container = pop.container;
+                key = pop.key;
+                state = pop.state;
+            },
+            acomma: function () {
+                var pop = stack.pop();
+                container.push(value);
+                value = container;
+                container = pop.container;
+                key = pop.key;
+                state = pop.state;
+            }
+        },
+        ":": {
+            colon: function () {
+                if (Object.hasOwnProperty.call(container, key)) {
+                    throw new SyntaxError("Duplicate key '" + key + "\"");
+                }
+                state = "ovalue";
+            }
+        },
+        ",": {
+            ocomma: function () {
+                container[key] = value;
+                state = "okey";
+            },
+            acomma: function () {
+                container.push(value);
+                state = "avalue";
+            }
+        },
+        "true": {
+            go: function () {
+                value = true;
+                state = "ok";
+            },
+            ovalue: function () {
+                value = true;
+                state = "ocomma";
+            },
+            firstavalue: function () {
+                value = true;
+                state = "acomma";
+            },
+            avalue: function () {
+                value = true;
+                state = "acomma";
+            }
+        },
+        "false": {
+            go: function () {
+                value = false;
+                state = "ok";
+            },
+            ovalue: function () {
+                value = false;
+                state = "ocomma";
+            },
+            firstavalue: function () {
+                value = false;
+                state = "acomma";
+            },
+            avalue: function () {
+                value = false;
+                state = "acomma";
+            }
+        },
+        "null": {
+            go: function () {
+                value = null;
+                state = "ok";
+            },
+            ovalue: function () {
+                value = null;
+                state = "ocomma";
+            },
+            firstavalue: function () {
+                value = null;
+                state = "acomma";
+            },
+            avalue: function () {
+                value = null;
+                state = "acomma";
+            }
+        }
+    };
 
     function debackslashify(text) {
 
@@ -299,12 +299,12 @@ var json_parse = (function () {
 // A regular expression is used to extract tokens from the JSON text.
 // The extraction process is cautious.
 
-        var result,
-            tx = /^[\u0020\t\n\r]*(?:([,:\[\]{}]|true|false|null)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|"((?:[^\r\n\t\\\"]|\\(?:["\\\/trnfb]|u[0-9a-fA-F]{4}))*)")/;
+        var result;
+        var tx = /^[\u0020\t\n\r]*(?:([,:\[\]{}]|true|false|null)|(-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|"((?:[^\r\n\t\\\"]|\\(?:["\\\/trnfb]|u[0-9a-fA-F]{4}))*)")/;
 
 // Set the starting state.
 
-        state = 'go';
+        state = "go";
 
 // The stack records the container, key, and state for each object or array
 // that contains another object or array while processing nested structures.
@@ -365,14 +365,14 @@ var json_parse = (function () {
             state = e;
         }
 
-// The parsing is finished. If we are not in the final 'ok' state, or if the
+// The parsing is finished. If we are not in the final "ok" state, or if the
 // remaining source contains anything except whitespace, then we did not have
 //a well-formed JSON text.
 
-        if (state !== 'ok' || (/[^\u0020\t\n\r]/.test(source))) {
-            throw state instanceof SyntaxError
+        if (state !== "ok" || (/[^\u0020\t\n\r]/.test(source))) {
+            throw (state instanceof SyntaxError)
                 ? state
-                : new SyntaxError('JSON');
+                : new SyntaxError("JSON");
         }
 
 // If there is a reviver function, we recursively walk the new structure,
@@ -381,23 +381,25 @@ var json_parse = (function () {
 // value in an empty key. If there is not a reviver function, we simply return
 // that value.
 
-        return typeof reviver === 'function'
+        return (typeof reviver === "function")
             ? (function walk(holder, key) {
-                var k, v, value = holder[key];
-                if (value && typeof value === 'object') {
+                var k;
+                var v;
+                var val = holder[key];
+                if (val && typeof val === "object") {
                     for (k in value) {
-                        if (Object.prototype.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
+                        if (Object.prototype.hasOwnProperty.call(val, k)) {
+                            v = walk(val, k);
                             if (v !== undefined) {
-                                value[k] = v;
+                                val[k] = v;
                             } else {
-                                delete value[k];
+                                delete val[k];
                             }
                         }
                     }
                 }
-                return reviver.call(holder, key, value);
-            }({'': value}, ''))
+                return reviver.call(holder, key, val);
+            }({"": value}, ""))
             : value;
     };
 }());
