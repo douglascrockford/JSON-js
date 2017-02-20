@@ -1,0 +1,21 @@
+{
+  "name": "json2",
+  "version": "2016.10.28",
+  "description": "JSON in JavaScript",
+  "main": "json2.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/douglascrockford/JSON-js.git"
+  },
+  "keywords": [
+    "javascript",
+    "json",
+    "polyfill"
+  ],
+  "author": "Douglas Crockford (http://www.crockford.com/)",
+  "license": "Public Domain",
+  "bugs": {
+    "url": "https://github.com/douglascrockford/JSON-js/issues"
+  },
+  "homepage": "https://github.com/douglascrockford/JSON-js#readme"
+}
