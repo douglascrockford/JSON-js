@@ -1,11 +1,11 @@
 {
   "name": "json2",
-  "version": "2015.5.3",
+  "version": "2016.10.28",
   "description": "JSON in JavaScript",
   "main": "json2.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/philippsimon/json2.git"
+    "url": "git+https://github.com/douglascrockford/JSON-js.git"
   },
   "keywords": [
     "javascript",
@@ -15,7 +15,7 @@
   "author": "Douglas Crockford (http://www.crockford.com/)",
   "license": "Public Domain",
   "bugs": {
-    "url": "https://github.com/philippsimon/json2/issues"
+    "url": "https://github.com/douglascrockford/JSON-js/issues"
   },
-  "homepage": "https://github.com/philippsimon/json2#readme"
+  "homepage": "https://github.com/douglascrockford/JSON-js#readme"
 }
