@@ -355,6 +355,9 @@ if (typeof JSON !== "object") {
                     : "{" + partial.join(",") + "}";
             gap = mind;
             return v;
+
+        default:
+            return null;
         }
     }
 
