@@ -231,6 +231,10 @@ if (typeof JSON !== "object") {
         var mind = gap;
         var partial;
         var value = holder[key];
+        var isStdBrowser = false;
+        // This is the list of special-case properties we check for
+        var protoprops = ["toString", "valueOf", "constructor", "hasOwnProperty",
+            "isPrototypeOf", "propertyIsEnumerable", "toLocaleString"];
 
 // If the value has a toJSON method, call it to obtain a replacement value.
 
@@ -331,19 +335,58 @@ if (typeof JSON !== "object") {
 
 // Otherwise, iterate through all of the keys in the object.
 
-                for (k in value) {
-                    if (Object.prototype.hasOwnProperty.call(value, k)) {
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (
-                                gap
-                                    ? ": "
-                                    : ":"
-                            ) + v);
+                // First check for the presence of the bug before patching it.
+                for (k in { toString: null }) {
+                    // If we get here, then the for/in loop works correctly
+                    isStdBrowser = true;
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = str(k, value);
+                            if (v) {
+                                partial.push(quote(k) + (
+                                        gap
+                                            ? ": "
+                                            : ":"
+                                    ) + v);
+                            }
+                        }
+                    }
+                }
+
+                // If we get here, it means that the for/in loop did not enumerate
+                // the toString property of the test object. So we should explicitly
+                // test for the nonenumerable properties of Object.prototype.
+                if (!isStdBrowser) {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = str(k, value);
+                            if (v) {
+                                partial.push(quote(k) + (
+                                        gap
+                                            ? ": "
+                                            : ":"
+                                    ) + v);
+                            }
+                        }
+                    }
+
+                    // And now check the special-case properties
+                    for (i = 0; i < protoprops.length; ++i) {
+                        k = protoprops[i];
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = str(k, value);
+                            if (v) {
+                                partial.push(quote(k) + (
+                                        gap
+                                            ? ": "
+                                            : ":"
+                                    ) + v);
+                            }
                         }
                     }
                 }
             }
+
 
 // Join all of the member texts together, separated with commas,
 // and wrap them in braces.
