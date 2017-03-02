@@ -211,7 +211,7 @@ var json_parse = (function () {
         },
         ":": {
             colon: function () {
-                if (Object.hasOwnProperty.call(container, key)) {
+                if (Object.prototype.hasOwnProperty.call(container, key)) {
                     throw new SyntaxError("Duplicate key '" + key + "\"");
                 }
                 state = "ovalue";

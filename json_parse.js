@@ -273,7 +273,7 @@ var json_parse = (function () {
                 key = string();
                 white();
                 next(":");
-                if (Object.hasOwnProperty.call(obj, key)) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
                     error("Duplicate key '" + key + "'");
                 }
                 obj[key] = value();
