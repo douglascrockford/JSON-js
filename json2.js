@@ -502,5 +502,15 @@ if (typeof JSON !== "object") {
 
             throw new SyntaxError("JSON.parse");
         };
-    }
+    };
+
+    if (typeof JSON.clone !== "function") {
+
+// The clone method takes a JSON object and returns a clone of the JSON object.
+
+        JSON.clone = function ( value ) {
+            return JSON.parse(JSON.stringify(value));
+        }
+    };
+
 }());
