@@ -1,6 +1,6 @@
 /*
     cycle.js
-    2017-02-07
+    2017-06-12
 
     Public Domain.
 
@@ -69,12 +69,13 @@ if (typeof JSON.decycle !== "function") {
 // one of the weird builtin objects.
 
             if (
-                typeof value === "object" && value !== null &&
-                !(value instanceof Boolean) &&
-                !(value instanceof Date) &&
-                !(value instanceof Number) &&
-                !(value instanceof RegExp) &&
-                !(value instanceof String)
+                typeof value === "object"
+                && value !== null
+                && !(value instanceof Boolean)
+                && !(value instanceof Date)
+                && !(value instanceof Number)
+                && !(value instanceof RegExp)
+                && !(value instanceof String)
             ) {
 
 // If the value is an object or array, look to see if we have already
