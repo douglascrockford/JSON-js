@@ -1,6 +1,6 @@
 /*
     cycle.js
-    2017-06-12
+    2018-05-15
 
     Public Domain.
 
@@ -15,7 +15,7 @@
 
 // The file uses the WeakMap feature of ES6.
 
-/*jslint es6, eval */
+/*jslint eval */
 
 /*property
     $ref, decycle, forEach, get, indexOf, isArray, keys, length, push,
@@ -141,7 +141,7 @@ if (typeof JSON.retrocycle !== "function") {
 //      return JSON.retrocycle(JSON.parse(s));
 // produces an array containing a single element which is the array itself.
 
-        var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\([\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/;
+        var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\(?:[\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/;
 
         (function rez(value) {
 
