@@ -4,7 +4,7 @@ JSON in JavaScript
 Douglas Crockford
 douglas@crockford.com
 
-2015-05-03
+2019-05-28
 
 
 JSON is a light-weight, language independent, data interchange format.
@@ -25,16 +25,10 @@ method and a parse method. The parse method uses the eval method to do the
 parsing, guarding it with several regular expressions to defend against
 accidental code execution hazards. On current browsers, this file does nothing,
 preferring the built-in JSON object. There is no reason to use this file unless
-fate compels you to support IE8, which is something that no one should ever 
+fate compels you to support IE8, which is something that no one should ever
 have to do again.
-
-json_parse.js: This file contains an alternative JSON parse function that
-uses recursive descent instead of eval.
-
-json_parse_state.js: This files contains an alternative JSON parse function that
-uses a state machine instead of eval.
 
 cycle.js: This file contains two functions, JSON.decycle and JSON.retrocycle,
 which make it possible to encode cyclical structures and dags in JSON, and to
-then recover them. This is a capability that is not provided by ES5. JSONPath 
+then recover them. This is a capability that is not provided by ES5. JSONPath
 is used to represent the links. [http://GOESSNER.net/articles/JsonPath/]
