@@ -4,19 +4,15 @@ JSON in JavaScript
 Douglas Crockford
 douglas@crockford.com
 
-2019-05-28
+2019-08-25
 
 
 JSON is a light-weight, language independent, data interchange format.
 See http://www.JSON.org/
 
-The files in this collection implement JSON encoders/decoders in JavaScript.
-
 JSON became a built-in feature of JavaScript when the ECMAScript Programming
 Language Standard - Fifth Edition was adopted by the ECMA General Assembly
-in December 2009. Most of the files in this collection are for applications
-that are expected to run in obsolete web browsers. For most purposes, json2.js
-is the best choice.
+in December 2009.
 
 
 json2.js: This file creates a JSON property in the global object, if there
