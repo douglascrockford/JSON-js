@@ -2,7 +2,7 @@
     To Test commit 2
     To Test Commit 3
 <<<<<<< HEAD
-    4th commit
+    4th new commit
 =======
 >>>>>>> 1335f12230748634b7c00bb752bf8910d4b393a0
     cycle.js
