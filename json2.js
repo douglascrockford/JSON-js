@@ -244,7 +244,8 @@ if (typeof JSON !== "object") {
 // Emulate [].includes(). It's actual for old-fashioned JScript.
 
     function includes(array, value) {
-        for (var i = 0; i < array.length; i++) {
+        var i;
+        for (i = 0; i < array.length; i += 1) {
             if (value === array[i]) {
                 return true;
             }
@@ -320,7 +321,7 @@ if (typeof JSON !== "object") {
 // Check the value is not circular object. Otherwise throw TypeError.
 
             if (includes(seen, value)) {
-                throw new TypeError('Converting circular structure to JSON');
+                throw new TypeError("Converting circular structure to JSON");
             }
 
 // Keep the value for the further check on circular references.
