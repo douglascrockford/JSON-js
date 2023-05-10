@@ -1,5 +1,5 @@
 //  json2.js
-//  2022-10-30
+//  2023-05-10
 //  Public Domain.
 //  NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
 
@@ -231,29 +231,6 @@ if (typeof JSON !== "object") {
     }
 
 
-// This variable is initialized with an empty array every time
-// JSON.stringify() is invoked and checked by the str() function. It's
-// used to keep references to object structures and capture cyclic
-// objects. Every new object is checked for its existence in this
-// array. If it's found it means the JSON object is cyclic and we have
-// to stop execution and throw a TypeError accordingly the ECMA262
-// (see NOTE 1 by the link https://tc39.es/ecma262/#sec-json.stringify).
-
-    var seen;
-
-// Emulate [].includes(). It's actual for old-fashioned JScript.
-
-    function includes(array, value) {
-        var i;
-        for (i = 0; i < array.length; i += 1) {
-            if (value === array[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     function str(key, holder) {
 
 // Produce a string from holder[key].
@@ -317,16 +294,6 @@ if (typeof JSON !== "object") {
             if (!value) {
                 return "null";
             }
-
-// Check the value is not circular object. Otherwise throw TypeError.
-
-            if (includes(seen, value)) {
-                throw new TypeError("Converting circular structure to JSON");
-            }
-
-// Keep the value for the further check on circular references.
-
-            seen.push(value);
 
 // Make an array to hold the partial results of stringifying this object value.
 
@@ -460,10 +427,6 @@ if (typeof JSON !== "object") {
             )) {
                 throw new Error("JSON.stringify");
             }
-
-// Initialize the reference keeper.
-
-            seen = [];
 
 // Make a fake root object containing our value under the key of "".
 // Return the result of stringifying the value.
