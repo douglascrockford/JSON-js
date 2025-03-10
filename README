@@ -28,3 +28,8 @@ cycle.js: This file contains two functions, JSON.decycle and JSON.retrocycle,
 which make it possible to encode cyclical structures and dags in JSON, and to
 then recover them. This is a capability that is not provided by ES5. JSONPath
 is used to represent the links. [http://GOESSNER.net/articles/JsonPath/]
+
+License
+
+This project is Public Domain software. See the LICENSE.txt file in this
+directory for complete text.
