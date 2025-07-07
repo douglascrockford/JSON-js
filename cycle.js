@@ -15,14 +15,14 @@
 
 // The file uses the WeakMap feature of ES6.
 
-/*jslint eval */
-
 /*property
-    $ref, decycle, forEach, get, indexOf, isArray, keys, length, push,
+    decycle, forEach, get, indexOf, isArray, keys, length, push,
     retrocycle, set, stringify, test
 */
 
 if (typeof JSON.decycle !== "function") {
+
+
     JSON.decycle = function decycle(object, replacer) {
         "use strict";
 
@@ -31,9 +31,9 @@ if (typeof JSON.decycle !== "function") {
 // duplicate references (which might be forming cycles) are replaced with
 // an object of the form
 
-//      {"$ref": PATH}
+//      {"\u{91}$": PATH}
 
-// where the PATH is a JSONPath string that locates the first occurance.
+// where the PATH is a JSON path array that locates the first occurance.
 
 // So,
 
@@ -41,14 +41,18 @@ if (typeof JSON.decycle !== "function") {
 //      a[0] = a;
 //      return JSON.stringify(JSON.decycle(a));
 
-// produces the string '[{"$ref":"$"}]'.
+// produces the string '[{"\u{91}$":[]}]'.
 
 // If a replacer function is provided, then it will be called for each value.
 // A replacer function receives a value and returns a replacement value.
 
-// JSONPath is used to locate the unique object. $ indicates the top level of
+// JSONPath is used to locate the unique object. [] indicates the top level of
 // the object or array. [NUMBER] or [STRING] indicates a child element or
 // property.
+
+// The marker is used to indicate that a value is a reference to an object.
+// The chosen marker is unlikely to be used in normal JSON data.
+        var marker = '\u{91}$';
 
         var objects = new WeakMap();     // object to path mappings
 
@@ -84,7 +88,9 @@ if (typeof JSON.decycle !== "function") {
 
                 old_path = objects.get(value);
                 if (old_path !== undefined) {
-                    return {$ref: old_path};
+                    var obj = {};
+                    obj[marker] = old_path;
+                    return obj;
                 }
 
 // Otherwise, accumulate the unique value and its path.
@@ -96,7 +102,7 @@ if (typeof JSON.decycle !== "function") {
                 if (Array.isArray(value)) {
                     nu = [];
                     value.forEach(function (element, i) {
-                        nu[i] = derez(element, path + "[" + i + "]");
+                        nu[i] = derez(element, path.concat(i));
                     });
                 } else {
 
@@ -106,14 +112,14 @@ if (typeof JSON.decycle !== "function") {
                     Object.keys(value).forEach(function (name) {
                         nu[name] = derez(
                             value[name],
-                            path + "[" + JSON.stringify(name) + "]"
+                            path.concat(name)
                         );
                     });
                 }
                 return nu;
             }
             return value;
-        }(object, "$"));
+        }(object, []));
     };
 }
 
@@ -128,51 +134,55 @@ if (typeof JSON.retrocycle !== "function") {
 // are replaced with references to the value found by the PATH. This will
 // restore cycles. The object will be mutated.
 
-// The eval function is used to locate the values described by a PATH. The
-// root object is kept in a $ variable. A regular expression is used to
-// assure that the PATH is extremely well formed. The regexp contains nested
-// * quantifiers. That has been known to have extremely bad performance
-// problems on some browsers for very long strings. A PATH is expected to be
-// reasonably short. A PATH is allowed to belong to a very restricted subset of
-// Goessner's JSONPath.
+// The dotwalk function is used to locate the values described by a PATH. The
+// root object is kept in a $ variable. A PATH is an array of strings that
+// are either property names or array indices and that are used to locate
+// the target value.
 
 // So,
-//      var s = '[{"$ref":"$"}]';
+//      var s = '[{"\u{91}$":[]}]';
 //      return JSON.retrocycle(JSON.parse(s));
 // produces an array containing a single element which is the array itself.
 
-        var px = /^\$(?:\[(?:\d+|"(?:[^\\"\u0000-\u001f]|\\(?:[\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*")\])*$/;
+        var marker = '\u{91}$';
+
+        function dotwalk(object, path) {
+
+// The dotwalk function walks through the object using the path array.
+// So, if the path is ["a", "b", 3], then it will return
+// object.a.b[3].
+
+            if (!path.length) return object;
+            return dotwalk(object[path.shift()], path);
+        }
 
         (function rez(value) {
 
-// The rez function walks recursively through the object looking for $ref
+// The rez function walks recursively through the object looking for marker 
 // properties. When it finds one that has a value that is a path, then it
-// replaces the $ref object with a reference to the value that is found by
+// replaces the object with a reference to the value that is found by
 // the path.
+
+            function processElement(parent, name, value) {
+                if (typeof value === "object" && value !== null) {
+                    var path = value[marker];
+                    if (Array.isArray(path)) {
+                        parent[name] = dotwalk($, path);
+                    } else {
+                        rez(value);
+                    }
+                }
+            }
 
             if (value && typeof value === "object") {
                 if (Array.isArray(value)) {
                     value.forEach(function (element, i) {
-                        if (typeof element === "object" && element !== null) {
-                            var path = element.$ref;
-                            if (typeof path === "string" && px.test(path)) {
-                                value[i] = eval(path);
-                            } else {
-                                rez(element);
-                            }
-                        }
+                        processElement(value, i, element);
                     });
                 } else {
                     Object.keys(value).forEach(function (name) {
                         var item = value[name];
-                        if (typeof item === "object" && item !== null) {
-                            var path = item.$ref;
-                            if (typeof path === "string" && px.test(path)) {
-                                value[name] = eval(path);
-                            } else {
-                                rez(item);
-                            }
-                        }
+                        processElement(value, name, item);
                     });
                 }
             }
